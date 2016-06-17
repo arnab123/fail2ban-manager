@@ -7,3 +7,6 @@ mysql>
 CREATE DATABASE f2bdb CHARACTER SET UTF8;
 CREATE USER f2badmin@localhost IDENTIFIED BY 'password';
 GRANT ALL PRIVILEGES ON f2bdb.* TO f2badmin@localhost;
+
+createsuperuser in django with uname : f2badmin 
+                               pass  : password123
