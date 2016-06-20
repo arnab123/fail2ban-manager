@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Fail2Ban Manager</title>
+</head>
+<body>
+<form action="/admin/" method="post">
+    {% csrf_token %}
+    {{ form }}
+    <br>
+    <input type="submit" value="Save Filter">
+</form>
+</body>
+</html>

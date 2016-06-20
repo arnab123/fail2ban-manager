@@ -23,4 +23,5 @@ class ActionAdmin(admin.ModelAdmin):
 
 admin.site.register(Filter, FilterAdmin)
 admin.site.register(Action, ActionAdmin)
-
+'''
+'''
