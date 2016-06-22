@@ -13,22 +13,24 @@ from .forms import FilterDataForm
 
 
 def get_manager(request):
-    if request.method == 'POST':
-        form = FilterDataForm(request.POST)
-        if form.is_valid():
-            # process the data in form.cleaned_data as required
-            # ...
-            # redirect to a new URL:
-            return HttpResponseRedirect('/thanks/')
 
-    else:
-        form = FilterDataForm()
+    form = FilterDataForm(request.POST or None)
+    context =  {
+    	'form': form
+    }
+    if form.is_valid():
+        filter_data = form.cleaned_data.get("filter_data")
 
-    return render(request, 'manager.html', {'form': form})
+        return HttpResponseRedirect('/thanks/')
+
+    return render(request, 'manager.html', context)
 
 
 def home(request):
 	return render(request,"home.html", {})
+
+def add_filter(request):
+	return render(request,"add_filter.html", {})
 
 def manager(request):
 	return render(request,"manager.html", {})

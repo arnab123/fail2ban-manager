@@ -20,5 +20,6 @@ from f2bmanager import views
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^manager/', views.get_manager, name='manager'),
+    url(r'^addfilter/', views.add_filter, name='addfilter'),
     url(r'^', views.home, name='home'),
 ]
