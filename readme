@@ -1,12 +1,2 @@
-using python 2.7 and django 1.10a1
 
-install mysql-server, libmysqlclient-dev
-and pip install MySQL-python
-
-mysql>
-CREATE DATABASE f2bdb CHARACTER SET UTF8;
-CREATE USER f2badmin@localhost IDENTIFIED BY 'password';
-GRANT ALL PRIVILEGES ON f2bdb.* TO f2badmin@localhost;
-
-createsuperuser in django with uname : f2badmin 
-                               pass  : password123
+updates : templates/add_filter.html (22/6 730pm)
