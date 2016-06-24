@@ -1,0 +1,53 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Add new filter</title>
+		<link type="text/css" rel="stylesheet" href="{% static 'css/filter_form.css' %}" /> 
+	</head>
+	<body>
+		<div id="wrapper">
+			<p> New Filter
+			</p>
+			<form method="post" action="" id="filterform" name="filterform" onSubmit="">
+
+				<div class="formElement">
+					<!-- <label for="id_filter_name">Name</label>
+					<input id="id_filter_name" name="filter_name" class="inputtext" maxlength="50" value="" type="text"/> -->
+					{% csrf_token %}
+    				{{ form.filter_name.label_tag }}
+    				{{ form.filter_name }}
+    				<div id='error1'><i><pre>     (Filter already exists!)</pre></i></div>
+					<div class="fix"></div>
+				</div>
+
+				<div class="formElement">
+					<!-- <label for="filter_desc">Description</label>
+					<textarea id="id_filter_desc" name="filter_desc"></textarea> -->
+					{% csrf_token %}
+    				{{ form.filter_desc.label_tag }}
+    				{{ form.filter_desc }}
+					<div class="fix"></div>
+				</div>
+
+				<div class="formElement">
+					<!-- <label for="filter_data">Data</label>
+					<textarea id="id_filter_data" name="filter_data"></textarea> -->
+					{% csrf_token %}
+    				{{ form.filter_data.label_tag }}
+    				{{ form.filter_data }}
+					<div class="fix"></div>
+				</div>
+
+				<div class="formElement">
+					<input type="submit" class="submit" value="Add Filter" />
+					<div class="fix"></div>
+				</div>
+			</form>
+		</div>
+	
+	<script type="text/javascript"> var err = {{ name_error }} </script>
+	<script type="text/javascript" src="{% static 'js/name_error.js' %}"></script>
+	
+	</body>
+</html>
