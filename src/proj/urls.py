@@ -21,5 +21,6 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^manager/', views.get_manager, name='manager'),
     url(r'^addfilter/', views.add_filter, name='addfilter'),
+    url(r'^addaction/', views.add_action, name='addaction'),
     url(r'^', views.home, name='home'),
 ]

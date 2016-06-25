@@ -16,10 +16,10 @@ class FilterAdmin(admin.ModelAdmin):
 	#	model = Filter
 
 class ActionAdmin(admin.ModelAdmin):
-	list_display = ["__unicode__", "description", "created", "updated"]
+	list_display = ["__unicode__", "action_desc", "created", "updated"]
 	form = ActionForm
 	#class Meta:
 	#	model = Action
 
-admin.site.register(Filter, FilterAdmin)
-admin.site.register(Action, ActionAdmin)
+#admin.site.register(Filter, FilterAdmin)
+#admin.site.register(Action, ActionAdmin)
