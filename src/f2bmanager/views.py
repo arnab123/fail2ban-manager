@@ -3,21 +3,30 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from .forms import FilterForm
 from .forms import ActionForm
+from .forms import FilterEditForm
+from .forms import ActionEditForm
 from django.db import IntegrityError
 
+from .models import Filter
+from .models import Action
 
 # Create your views here.
 
 
 def get_manager(request):
-	form = FilterForm(request.POST or None)
+	# form = FilterForm(request.POST or None)
+	# context =  {
+	# 	'form': form,
+	# }
+	# if form.is_valid():
+	# 	print form
+	# 	form.save()
+	form = FilterEditForm(request.POST or None)
 	context =  {
 		'form': form,
+		'name_error': '0',
 	}
-	if form.is_valid():
-		print form
-		form.save()
-	return render(request, 'manager.html', context)
+	return render(request, 'edit_filter.html', context)
 
 
 def home(request):
@@ -25,30 +34,28 @@ def home(request):
 
 def add_filter(request):
 	default_filter_data = '[INCLUDES]\n\n# Read common prefixes. \
-	If any customizations available -- read them from\n# common.local\nbefore =\
-	 common.conf\n\n\n[Definition]\n\nfailregex = \n\nignoreregex = '
+If any customizations available -- read them from\n# common.local\nbefore =\
+common.conf\n\n\n[Definition]\n\nfailregex = \n\nignoreregex = '
 	form = FilterForm(request.POST or None, initial={'filter_data': default_filter_data})
 	context =  {
 		'form': form,
 		'name_error': '0',
 	}
-
-	if form.is_valid():
-		instance = form.save(commit=False)	
-		name_data = form.cleaned_data.get("filter_name")
-		desc_data = form.cleaned_data.get("filter_desc")
-		data_data = form.cleaned_data.get("filter_data")
-		#print name_data
-		#print desc_data
-		#print data_data
-		instance.filter_name = name_data
-		instance.filter_desc = desc_data
-		instance.filter_data = data_data
-		instance.save()
-		return HttpResponseRedirect('/saved/')
-	# except IntegrityError as e:
-	# 	print 'ERROR'
-	# 	context['name_error'] = '1'
+	if request.method == "POST":
+		if form.is_valid():
+			instance = form.save(commit=False)	
+			name_data = form.cleaned_data.get("filter_name")
+			desc_data = form.cleaned_data.get("filter_desc")
+			data_data = form.cleaned_data.get("filter_data")
+			#print name_data #print desc_data #print data_data
+			instance.filter_name = name_data
+			instance.filter_desc = desc_data
+			instance.filter_data = data_data
+			instance.save()
+			return HttpResponseRedirect('/saved/')
+		else:
+			if Filter.objects.filter(filter_name=form.data['filter_name']).count() > 0:
+				context['name_error']='1'
 	return render(request,"add_filter.html", context)
 
 def add_action(request):
@@ -66,27 +73,91 @@ nban\n# Notes.:  command executed when unbanning. Take care that the\n#         
 		'form': form,
 		'name_error': '0',
 	}
-
-	if form.is_valid():
-		instance = form.save(commit=False)	
-		name_data = form.cleaned_data.get("action_name")
-		desc_data = form.cleaned_data.get("action_desc")
-		data_data = form.cleaned_data.get("action_data")
-		#print name_data
-		#print desc_data
-		#print data_data
-		instance.action_name = name_data
-		instance.action_desc = desc_data
-		instance.action_data = data_data
-		instance.save()
-		return HttpResponseRedirect('/saved/')
-	# except IntegrityError as e:
-	# 	print 'ERROR'
-	# 	context['name_error'] = '1'
+	if request.method == "POST":
+		if form.is_valid():
+			instance = form.save(commit=False)	
+			name_data = form.cleaned_data.get("action_name")
+			desc_data = form.cleaned_data.get("action_desc")
+			data_data = form.cleaned_data.get("action_data")
+			#print name_data 	#print desc_data   #print data_data
+			instance.action_name = name_data
+			instance.action_desc = desc_data
+			instance.action_data = data_data
+			instance.save()
+			return HttpResponseRedirect('/saved/')
+		else:
+			if Action.objects.filter(action_name=form.data['action_name']).count() > 0:
+				context['name_error']='1'
 	return render(request,"add_action.html", context)
 
-def manager(request):
-	return render(request,"manager.html", {})
+def edit_filter(request):
+	init_name = ''
+	init_data = ''
+	init_desc = ''
+	qset = Filter.objects.filter(filter_name='test1')
+	if qset.count() < 1:
+		raise Exception('Filter entry with the given name doesn\'t exist')
+	elif qset.count() > 1:
+		raise Exception('More than one filters with the given name exists')
+	for i in qset:
+		init_name = i.filter_name
+		init_data = i.filter_data
+		init_desc = i.filter_desc
+	form = FilterEditForm(request.POST or None, initial={'filter_name': init_name, \
+		'filter_desc': init_desc, 'filter_data': init_data})
+	context =  {
+		'form': form,
+		'name_error': '0',
+	}
+	if request.method == "POST":
+		if form.is_valid():
+			name_data = form.cleaned_data.get("filter_name")
+			desc_data = form.cleaned_data.get("filter_desc")
+			data_data = form.cleaned_data.get("filter_data")
+			# print name_data			# print desc_data    # print data_data
+			try:
+				qset.update(filter_name=name_data, filter_desc=desc_data, filter_data=data_data)
+				return HttpResponseRedirect('/saved/')
+			except IntegrityError as e:
+				context['name_error']='1'
+		else:
+			pass
+	return render(request,"edit_filter.html", context)
+
+def edit_action(request):
+	init_name = ''
+	init_data = ''
+	init_desc = ''
+	qset = Action.objects.filter(action_name='test8')
+	if qset.count() < 1:
+		raise Exception('Action entry with the given name doesn\'t exist')
+	elif qset.count() > 1:
+		raise Exception('More than one actions with the given name exists')
+	for i in qset:
+		init_name = i.action_name
+		init_data = i.action_data
+		init_desc = i.action_desc
+	form = ActionEditForm(request.POST or None, initial={'action_name': init_name, \
+		'action_desc': init_desc, 'action_data': init_data})
+	context =  {
+		'form': form,
+		'name_error': '0',
+	}
+	if request.method == "POST":
+		if form.is_valid():
+			name_data = form.cleaned_data.get("action_name")
+			desc_data = form.cleaned_data.get("action_desc")
+			data_data = form.cleaned_data.get("action_data")
+			# print name_data			# print desc_data    # print data_data
+			try:
+				qset.update(action_name=name_data, action_desc=desc_data, action_data=data_data)
+				return HttpResponseRedirect('/saved/')
+			except IntegrityError as e:
+				context['name_error']='1'
+		else:
+			pass
+	return render(request,"edit_action.html", context)
+
 
 
 	

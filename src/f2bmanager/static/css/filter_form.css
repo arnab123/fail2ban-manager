@@ -88,7 +88,7 @@ textarea {
 	background:#89C33F;
 	margin:2rem 0 2rem 14%;
 	width:15%;
-	float:none;
+	float:left;
 	border:1px solid #798f5d;
 	border-radius:.15rem;
 	cursor: pointer;
@@ -97,6 +97,14 @@ textarea {
 
 .submit:hover {
 	background: #96d644;
+}
+
+#cancel {
+	background:#595959;
+}
+
+#cancel:hover {
+	background: #797979;
 }
 
 .fix {

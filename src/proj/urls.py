@@ -22,5 +22,7 @@ urlpatterns = [
     url(r'^manager/', views.get_manager, name='manager'),
     url(r'^addfilter/', views.add_filter, name='addfilter'),
     url(r'^addaction/', views.add_action, name='addaction'),
+    url(r'^editfilter/', views.edit_filter, name='editfilter'),
+    url(r'^editaction/', views.edit_action, name='editaction'),
     url(r'^$', views.home, name='home'),
 ]

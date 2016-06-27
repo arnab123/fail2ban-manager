@@ -38,16 +38,20 @@
     				{{ form.filter_data }}
 					<div class="fix"></div>
 				</div>
-
+				{% block submit %}
 				<div class="formElement">
 					<input type="submit" class="submit" value="Add Filter" />
 					<div class="fix"></div>
 				</div>
+				{% endblock %}
+				{% block cancel %}
+				{% endblock %}
 			</form>
 		</div>
 	
 	<script type="text/javascript"> var err = {{ name_error }} </script>
 	<script type="text/javascript" src="{% static 'js/name_error.js' %}"></script>
-	
+	{% block script %}
+	{% endblock %}
 	</body>
 </html>
