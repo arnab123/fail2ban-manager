@@ -11,6 +11,7 @@ from .models import Filter
 from .models import Action
 
 from django.utils.safestring import mark_safe
+import os
 
 # Create your views here.
 
@@ -28,6 +29,7 @@ def get_manager(request):
 		'form': form,
 		'name_error': '0',
 	}
+	os.system('python f2bmanager/backend/change_name.py prev_name final_name')
 	return render(request, 'edit_filter.html', context)
 
 
@@ -58,6 +60,7 @@ common.conf\n\n\n[Definition]\n\nfailregex = \n\nignoreregex = '
 		else:
 			if Filter.objects.filter(filter_name=form.data['filter_name']).count() > 0:
 				context['name_error']='1'
+	# print Filter.objects.all()
 	return render(request,"add_filter.html", context)
 
 def add_action(request):
