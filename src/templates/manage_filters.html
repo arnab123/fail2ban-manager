@@ -1,0 +1,83 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Manage Filters</title>
+    <!-- <link type="text/css" rel="stylesheet" href="{% static 'css/' %}" />  -->
+  </head>
+  <body>
+    <script type="text/javascript" src="{% static 'jquery-3.0.0.min.js' %}"></script>
+    <div id="heading">
+      FILTERS
+    </div>
+    <div id="adddiv">
+      <button class="addbutton" type="button" onclick="window.location.href = &quot;http://127.0.0.1:8000/addfilter/&quot;">Add Filter</button>
+    </div>
+    <div id="tablediv">
+    <table id="maintable" style="width:100%">
+      <tr class="row">
+        <td class="nametd">Name</td>
+        <td class="desctd">Description</td> 
+        <td class="createdtd">Created</td>
+        <td class="updatedtd">Updated</td> 
+      </tr>
+      {% for entry in tlist %}
+      <tr class="row">
+        <td class="nametd">{{ entry.filter_name }}</td>
+        <td class="desctd">{{ entry.filter_desc }}</td> 
+        <td class="createdtd">{{ entry.created }}</td>
+        <td class="updatedtd">{{ entry.updated }}</td> 
+        <td class="viewtd"> <button class="viewbutton" type="button">View</button> </td>
+        <td class="edittd"> <button class="editbutton" type="button">Edit</button> </td>
+        <td class="deletetd"> <button class="deletebutton" type="button">Delete</button> </td>
+      </tr>
+      {% endfor %}
+    </table>
+    </div>
+  <script type="text/javascript">
+  $(document).ready(function() {
+        edit_name = ''
+        $('button.viewbutton').click(function() {
+           edit_name = $(this).parent().parent().find('.nametd').text();
+           window.location.href = "http://127.0.0.1:8000/viewfilter?name="+edit_name;
+        });
+        $('button.editbutton').click(function() {
+            edit_name = $(this).parent().parent().find('.nametd').text();
+            window.location.href = "http://127.0.0.1:8000/editfilter?name="+edit_name;
+        });
+        $('button.deletebutton').click(function() {
+            edit_name = $(this).parent().parent().find('.nametd').text();
+            elem = $(this).parent().parent();
+            $.ajax({
+              url: "http://127.0.0.1:8000/deletefilter",
+              method: 'GET',
+              data: {
+                  name: edit_name,
+              },
+              success: function (response) {
+                  elem.hide();
+              }
+          });
+        });
+    });
+  </script>
+  {% block script %}
+  {% endblock %}
+  </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

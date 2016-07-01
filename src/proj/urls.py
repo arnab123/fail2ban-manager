@@ -24,5 +24,11 @@ urlpatterns = [
     url(r'^addaction/', views.add_action, name='addaction'),
     url(r'^editfilter/', views.edit_filter, name='editfilter'),
     url(r'^editaction/', views.edit_action, name='editaction'),
+    url(r'^viewfilter/', views.view_filter, name='viewfilter'),
+    url(r'^viewaction/', views.view_action, name='viewaction'),
+    url(r'^deletefilter/', views.delete_filter, name='deletefilter'),
+    url(r'^deleteaction/', views.delete_action, name='deleteaction'),
+    url(r'^managefilters/', views.manage_filters, name='managefilters'),
+    url(r'^manageactions/', views.manage_actions, name='manageactions'),
     url(r'^$', views.home, name='home'),
 ]

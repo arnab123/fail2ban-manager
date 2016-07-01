@@ -10,6 +10,8 @@ from django.db import IntegrityError
 from .models import Filter
 from .models import Action
 
+from django.utils.safestring import mark_safe
+
 # Create your views here.
 
 
@@ -52,7 +54,7 @@ common.conf\n\n\n[Definition]\n\nfailregex = \n\nignoreregex = '
 			instance.filter_desc = desc_data
 			instance.filter_data = data_data
 			instance.save()
-			return HttpResponseRedirect('/saved/')
+			return HttpResponseRedirect('/managefilters/')
 		else:
 			if Filter.objects.filter(filter_name=form.data['filter_name']).count() > 0:
 				context['name_error']='1'
@@ -84,17 +86,23 @@ nban\n# Notes.:  command executed when unbanning. Take care that the\n#         
 			instance.action_desc = desc_data
 			instance.action_data = data_data
 			instance.save()
-			return HttpResponseRedirect('/saved/')
+			return HttpResponseRedirect('/manageactions/')
 		else:
 			if Action.objects.filter(action_name=form.data['action_name']).count() > 0:
 				context['name_error']='1'
 	return render(request,"add_action.html", context)
 
+filter_edit_name = ''
+action_edit_name = ''
+
 def edit_filter(request):
 	init_name = ''
 	init_data = ''
 	init_desc = ''
-	qset = Filter.objects.filter(filter_name='test1')
+	req = request.GET
+	name = req.get('name')
+	print name
+	qset = Filter.objects.filter(filter_name=name)
 	if qset.count() < 1:
 		raise Exception('Filter entry with the given name doesn\'t exist')
 	elif qset.count() > 1:
@@ -117,7 +125,7 @@ def edit_filter(request):
 			# print name_data			# print desc_data    # print data_data
 			try:
 				qset.update(filter_name=name_data, filter_desc=desc_data, filter_data=data_data)
-				return HttpResponseRedirect('/saved/')
+				return HttpResponseRedirect('/managefilters/')
 			except IntegrityError as e:
 				context['name_error']='1'
 		else:
@@ -128,7 +136,10 @@ def edit_action(request):
 	init_name = ''
 	init_data = ''
 	init_desc = ''
-	qset = Action.objects.filter(action_name='test8')
+	req = request.GET
+	name = req.get('name')
+	print name
+	qset = Action.objects.filter(action_name=name)
 	if qset.count() < 1:
 		raise Exception('Action entry with the given name doesn\'t exist')
 	elif qset.count() > 1:
@@ -151,7 +162,7 @@ def edit_action(request):
 			# print name_data			# print desc_data    # print data_data
 			try:
 				qset.update(action_name=name_data, action_desc=desc_data, action_data=data_data)
-				return HttpResponseRedirect('/saved/')
+				return HttpResponseRedirect('/manageactions/')
 			except IntegrityError as e:
 				context['name_error']='1'
 		else:
@@ -159,5 +170,70 @@ def edit_action(request):
 	return render(request,"edit_action.html", context)
 
 
+def manage_filters(request):
+	context =  {
+		'tlist': Filter.objects.order_by('filter_name'),
+	}
+	return render(request, 'manage_filters.html', context)
+
+def manage_actions(request):
+	context =  {
+		'tlist': Action.objects.order_by('action_name'),
+	}
+	return render(request, 'manage_actions.html', context)
+
+def view_filter(request):
+	name = request.GET.get('name')
+	qset = Filter.objects.filter(filter_name=name)
+	if qset.count() < 1:
+		raise Exception('Filter entry with the given name doesn\'t exist')
+	elif qset.count() > 1:
+		raise Exception('More than one filters with the given name exists')
+	data = ''
+	for i in qset:
+		data = i.filter_data
+	context = {
+		'name' : name,
+		'data' : mark_safe(data),
+	}
+	return render(request, 'view.html', context)
+
+def view_action(request):
+	name = request.GET.get('name')
+	qset = Action.objects.filter(action_name=name)
+	if qset.count() < 1:
+		raise Exception('Action entry with the given name doesn\'t exist')
+	elif qset.count() > 1:
+		raise Exception('More than one actions with the given name exists')
+	data = ''
+	for i in qset:
+		data = i.action_data
+	context = {
+		'name' : name,
+		'data' : mark_safe(data),
+	}
+	return render(request, 'view.html', context)
+
+def delete_filter(request):
+	name = request.GET.get('name')
+	qset = Filter.objects.filter(filter_name=name)
+	if qset.count() < 1:
+		raise Exception('Filter entry with the given name doesn\'t exist')
+	elif qset.count() > 1:
+		raise Exception('More than one filters with the given name exists')
+	qset.delete()
+	print name
+	return render(request, 'empty.html', {})
+
+def delete_action(request):
+	name = request.GET.get('name')
+	qset = Action.objects.filter(action_name=name)
+	if qset.count() < 1:
+		raise Exception('Action entry with the given name doesn\'t exist')
+	elif qset.count() > 1:
+		raise Exception('More than one actions with the given name exists')
+	qset.delete()
+	print name
+	return render(request, 'empty.html', {})
 
 	
