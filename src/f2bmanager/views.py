@@ -14,6 +14,12 @@ from django.utils.safestring import mark_safe
 import os
 
 # Create your views here.
+def fail_start():
+	os.system('python f2bmanager/backend/f_start.py')
+
+def fail_restart():
+	os.system('python f2bmanager/backend/f_restart.py')	
+
 def make_file(location,name,data):
 	os.system('python f2bmanager/backend/make_file.py ' + location + ' ' + name + ' ' + data)
 
