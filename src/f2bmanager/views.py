@@ -14,6 +14,11 @@ from django.utils.safestring import mark_safe
 import os
 
 # Create your views here.
+def make_file(location,name,data):
+	os.system('python f2bmanager/backend/make_file.py ' + location + ' ' + name + ' ' + data)
+
+def replace_jail(jail,para,value):
+	os.system('python f2bmanager/backend/change_jail_para.py ' + jail + ' ' + para + ' ' + value)
 
 def edit_form(prev_name,new_name):
 	os.system('python f2bmanager/backend/change_name.py ' + prev_name + ' ' +new_name)
@@ -31,7 +36,9 @@ def get_manager(request):
 		'form': form,
 		'name_error': '0',
 	}
-	edit_form('hell','finally')
+	# edit_form('hell','finally')
+	# replace_jail('ssh','enabled','false')
+	make_file('action.d','abhi','Yooo')
 	return render(request, 'edit_filter.html', context)
 
 
