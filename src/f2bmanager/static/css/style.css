@@ -3,7 +3,7 @@
 body{
   margin: 0px;
   padding: 0px;
-  background: #1abc9d;
+  background: white;
 }
 
 h1{
@@ -84,7 +84,6 @@ h1{
 .inner-screen{
   width: 800px;
   height: 340px;
-  background: #1abc9d;
   margin: 0px auto;
   padding-top: 80px;
 }
@@ -149,6 +148,7 @@ a{
   text-decoration: none;
   transition: all 0.3s ease;
   font-size: 12px;
+
 }
 
 a:hover{
@@ -170,4 +170,44 @@ a:hover{
 
 :-ms-input-placeholder {  
    color: gray;  
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: transparent;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    margin: auto;
+}
+
+li {
+    float: left;
+    margin: auto;
+}
+
+li a {
+    display: block;
+    color: black;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    margin: auto;
+
+}
+
+li a:hover:not(.active) {
+    background-color: #111;
+    margin: auto;
+    border-radius: 15px;
+}
+
+.active {
+    background-color: black;
+    margin: auto;
+    color: white;
+    border-radius: 15px;
 }

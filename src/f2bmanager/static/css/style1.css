@@ -1,0 +1,50 @@
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: transparent;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    margin: auto;
+    text-align: center;
+}
+
+li {
+    float: left;
+    margin: auto;
+    text-align: center;
+}
+
+li a {
+    display: block;
+    color: black;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    margin: auto;
+    text-align: center;
+
+}
+
+li a:hover:not(.active) {
+    background-color: black;
+    margin: auto;
+    border-radius: 15px;
+    color: white;
+}
+
+.active {
+    background-color: black;
+    margin: auto;
+    color: white;
+    border-radius: 15px;
+}
+
+h1.hea {
+  border: 1px;
+  padding-top: 20px;
+  text-align: center;
+}

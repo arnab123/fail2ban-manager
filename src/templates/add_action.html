@@ -4,11 +4,21 @@
 	<head>
 		<title>Add new action</title>
 		<link type="text/css" rel="stylesheet" href="{% static 'css/action_form.css' %}" /> 
+		<link rel="stylesheet" href="{% static 'css/style1.css' %} ">
 	</head>
 	<body>
+
+		<ul>
+  <li><a class="active" href="/">Home</a></li>
+  <li><a href="/addaction">ADD ACTION</a></li>
+  <li><a href="/addfilter">ADD FILTER</a></li>  
+  <li><a href="/manageactions">MANAGE ACTIONS</a></li>
+  <li><a href="/managefilters">MANAGE FILTERS</a></li>
+  </ul>
+
 		<div id="wrapper">
-			<p> New Action
-			</p>
+			<h1 class="hea"> New Action
+			</h1>
 			<form method="post" action="" id="actionform" name="actionform" onSubmit="">
 
 				<div class="formElement">
