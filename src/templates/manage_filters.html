@@ -4,25 +4,79 @@
   <head>
     <title>Manage Filters</title>
     <!-- <link type="text/css" rel="stylesheet" href="{% static 'css/' %}" />  -->
+        <style>
+            table {
+                        border-collapse: collapse;
+                        width: 100%;
+
+                    }
+
+                  th, td {
+                      text-align: left;
+                      padding: 8px;
+                      max-width: 100px;
+                  }
+
+                  tr:nth-child(even){background-color: #f2f2f2}
+
+                  th {
+                      background-color: #4CAF50;
+                      color: white;
+}
+tr:nth-child(even){background-color: #f2f2f2}
+
+h1.hea {
+  border: 1px;
+  padding-top: 20px;
+  text-align: center;
+}
+
+
+
+.button { 
+    background-color: black;
+    color: white;
+    border: 2px solid #4CAF50;
+    padding: 16px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+    cursor: pointer;
+}
+
+.button:hover {
+    background-color: #4CAF50;
+    color: white;
+}
+  </style>
   </head>
   <body>
     <script type="text/javascript" src="{% static 'jquery-3.0.0.min.js' %}"></script>
     <div id="heading">
-      FILTERS
+      <h1 class="hea">FILTERS</h1>
+      
     </div>
     <div id="adddiv">
-      <button class="addbutton" type="button" onclick="window.location.href = &quot;http://127.0.0.1:8000/addfilter/&quot;">Add Filter</button>
+      <button class="button" type="button" onclick="window.location.href = &quot;http://127.0.0.1:8000/addfilter/&quot;">Add Filter</button>
     </div>
-    <div id="tablediv">
+    <div id="tablediv" >
     <table id="maintable" style="width:100%">
       <tr class="row">
-        <td class="nametd">Name</td>
-        <td class="desctd">Description</td> 
-        <td class="createdtd">Created</td>
-        <td class="updatedtd">Updated</td> 
+        <th class="nametd">Name</th>
+        <th class="desctd">Description</th> 
+        <th class="createdtd">Created</th>
+        <th class="updatedtd">Updated</th> 
+        <th class="viewtd">  </th>
+        <th class="edittd">  </th>
+        <th class="deletetd">  </th>
       </tr>
       {% for entry in tlist %}
       <tr class="row">
+
         <td class="nametd">{{ entry.filter_name }}</td>
         <td class="desctd">{{ entry.filter_desc }}</td> 
         <td class="createdtd">{{ entry.created }}</td>
