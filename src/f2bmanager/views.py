@@ -15,6 +15,8 @@ import os
 
 # Create your views here.
 
+def edit_form(prev_name,new_name):
+	os.system('python f2bmanager/backend/change_name.py prev_name new_name')
 
 def get_manager(request):
 	# form = FilterForm(request.POST or None)
@@ -29,7 +31,6 @@ def get_manager(request):
 		'form': form,
 		'name_error': '0',
 	}
-	os.system('python f2bmanager/backend/change_name.py prev_name final_name')
 	return render(request, 'edit_filter.html', context)
 
 
