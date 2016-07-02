@@ -30,5 +30,11 @@ urlpatterns = [
     url(r'^deleteaction/', views.delete_action, name='deleteaction'),
     url(r'^managefilters/', views.manage_filters, name='managefilters'),
     url(r'^manageactions/', views.manage_actions, name='manageactions'),
-    url(r'^$', views.home, name='home'),
+	url(r'^managejails/', views.manage_jails, name='managejails'),
+	url(r'^addjail/', views.add_jail, name='addjail'),
+	url(r'^editjail/', views.edit_jail, name='editjail'),
+	url(r'^editdefaultjail/', views.edit_defaultjail, name='editdefaultjail'),
+	url(r'^deletejail/', views.delete_jail, name='deletejail'),
+	url(r'^viewjail/', views.view_jail, name='viewjail'),
+	url(r'^$', views.home, name='home'),
 ]

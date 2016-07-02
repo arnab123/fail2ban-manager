@@ -1,1 +1,1 @@
-sudo fail2ban-client restart
+sudo fail2ban-client reload

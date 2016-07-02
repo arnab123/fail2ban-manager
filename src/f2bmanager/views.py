@@ -5,20 +5,29 @@ from .forms import FilterForm
 from .forms import ActionForm
 from .forms import FilterEditForm
 from .forms import ActionEditForm
+from .forms import DefaultJailEditForm
+from .forms import JailForm
+from .forms import JailEditForm
 from django.db import IntegrityError
 
 from .models import Filter
 from .models import Action
+from .models import DefaultJail
+from .models import Jail
 
 from django.utils.safestring import mark_safe
+
+# Create your views here.
+
+
 import os
 
 # Create your views here.
 def fail_start():
-	os.system('python f2bmanager/backend/f_start.py')
+	os.system('sudo fail2ban-client start')
 
 def fail_restart():
-	os.system('python f2bmanager/backend/f_restart.py')	
+	os.system('sudo fail2ban-client reload')	
 
 def make_file(location,name,data):
 	os.system('python f2bmanager/backend/make_file.py ' + location + ' ' + name + ' ' + data)
@@ -30,25 +39,56 @@ def edit_form(prev_name,new_name):
 	os.system('python f2bmanager/backend/change_name.py ' + prev_name + ' ' +new_name)
 
 def get_manager(request):
-	# form = FilterForm(request.POST or None)
-	# context =  {
-	# 	'form': form,
-	# }
-	# if form.is_valid():
-	# 	print form
-	# 	form.save()
-	form = FilterEditForm(request.POST or None)
-	context =  {
-		'form': form,
-		'name_error': '0',
-	}
+
 	# edit_form('hell','finally')
 	# replace_jail('ssh','enabled','false')
 	make_file('action.d','abhi','Yooo')
-	return render(request, 'edit_filter.html', context)
+	return render(request, 'empty.html', {})
+
+def onFilterEdit(name):
+	obj = Filter.objects.get(filter_name=name)
+	make_file('filter.d', obj.filter_name, obj.filter_data)
+	#fail_restart()
+
+def onActionEdit(name):
+	obj = Action.objects.get(action_name=name)
+	make_file('action.d', obj.action_name, obj.action_data)
+	#fail_restart()
+
+
+
+def makeJailData(name):
+	i = Jail.objects.get(jail_name=name)
+	data = ''
+	data += '['+i.jail_name+']\n\n'
+	data += 'enabled = '+i.enabled +'\n'
+	data += 'ignoreip = '+i.ignoreip +'\n'
+	data += 'bantime = '+str(i.bantime) +'\n'
+	data += 'findtime = '+str(i.findtime) +'\n'
+	data += 'maxretry = '+str(i.maxretry) +'\n'
+	data += 'backend = '+i.backend +'\n'
+	data += 'usedns = '+i.usedns+'\n'
+	data += 'filter = '+str(i.jail_filter)+'\n'
+	data += 'action = '+str(i.jail_action) +'['+i.jail_actionvars+']\n'
+	data += 'logpath = '+i.logpath +'\n'
+	data += i.jail_data + '\n\n'
+	return data
+
+def onDeploy():
+	print 'Deploy Called'
+	qset = Jail.objects.all()
+	temp = ''
+	for i in qset:
+		temp += makeJailData(i.jail_name)
+		onFilterEdit(str(i.jail_filter))
+		onActionEdit(str(i.jail_action))
+	os.system('echo \"' + temp + '\" > /etc/fail2ban/jail.local')
+	fail_restart()
+
 
 
 def home(request):
+	onDeploy()
 	return render(request,"home.html", {})
 
 def add_filter(request):
@@ -75,7 +115,6 @@ common.conf\n\n\n[Definition]\n\nfailregex = \n\nignoreregex = '
 		else:
 			if Filter.objects.filter(filter_name=form.data['filter_name']).count() > 0:
 				context['name_error']='1'
-	# print Filter.objects.all()
 	return render(request,"add_filter.html", context)
 
 def add_action(request):
@@ -254,4 +293,191 @@ def delete_action(request):
 	print name
 	return render(request, 'empty.html', {})
 
-	
+def edit_defaultjail(request):
+	qset = DefaultJail.objects.all()
+	init_ignoreip = ''
+	init_bantime = ''
+	init_findtime = ''
+	init_maxretry = ''
+	init_backend = ''
+	init_usedns = ''
+	for i in qset:
+		init_ignoreip = i.ignoreip
+		init_bantime = i.bantime
+		init_findtime = i.findtime
+		init_maxretry = i.maxretry
+		init_backend = i.backend
+		init_usedns = i.usedns
+	form = DefaultJailEditForm(request.POST or None, initial={'ignoreip': init_ignoreip, \
+		'bantime':init_bantime,\
+		'findtime':init_findtime,\
+		'maxretry':init_maxretry,\
+		'backend':init_backend,\
+		'usedns':init_usedns})
+	context =  {
+		'form': form,
+	}
+	if request.method == "POST":
+		#print form
+		if form.is_valid():
+			qset.delete()
+			form.save()
+			return HttpResponseRedirect('/managejails/')
+		else:
+			pass
+	return render(request,"edit_defaultjail.html", context)
+
+def add_jail(request):
+	qset = DefaultJail.objects.all()
+	init_ignoreip = ''
+	init_bantime = ''
+	init_findtime = ''
+	init_maxretry = ''
+	init_backend = ''
+	init_usedns = ''
+	for i in qset:
+		init_ignoreip = i.ignoreip
+		init_bantime = i.bantime
+		init_findtime = i.findtime
+		init_maxretry = i.maxretry
+		init_backend = i.backend
+		init_usedns = i.usedns
+	form = JailForm(request.POST or None, initial={'ignoreip': init_ignoreip, \
+		'bantime':init_bantime,\
+		'findtime':init_findtime,\
+		'maxretry':init_maxretry,\
+		'backend':init_backend,\
+		'usedns':init_usedns})
+	context =  {
+		'form': form,
+	}
+	if request.method == "POST":
+		#print form
+		if form.is_valid():
+			form.save()
+			return HttpResponseRedirect('/managejails/')
+		else:
+			pass
+	return render(request,"add_jail.html", context)
+
+def edit_jail(request):
+	name = request.GET.get('name')
+	qset = Jail.objects.filter(jail_name=name)
+	if qset.count() < 1:
+		raise Exception('Jail entry with the given name doesn\'t exist')
+	elif qset.count() > 1:
+		raise Exception('More than one jails with the given name exists')
+	init_ignoreip = ''
+	init_bantime = ''
+	init_findtime = ''
+	init_maxretry = ''
+	init_backend = ''
+	init_usedns = ''
+	init_jail_name = ''
+	init_jail_desc = ''
+	init_jail_data = ''
+	init_jail_actionvars = ''
+	init_jail_filter = ''
+	init_jail_action = ''
+	init_logpath = ''
+	init_enabled = ''
+
+	for i in qset:
+		init_ignoreip = i.ignoreip
+		init_bantime = i.bantime
+		init_findtime = i.findtime
+		init_maxretry = i.maxretry
+		init_backend = i.backend
+		init_usedns = i.usedns
+		init_jail_name = i.jail_name
+		init_jail_desc = i.jail_desc
+		init_jail_data = i.jail_data
+		init_jail_actionvars = i.jail_actionvars
+		init_jail_filter = i.jail_filter
+		init_jail_action = i.jail_action
+		init_logpath = i.logpath
+		init_enabled = i.enabled
+	form = JailEditForm(request.POST or None, initial={'ignoreip': init_ignoreip, \
+		'bantime':init_bantime,\
+		'findtime':init_findtime,\
+		'maxretry':init_maxretry,\
+		'backend':init_backend,\
+		'usedns':init_usedns,\
+		'jail_name':init_jail_name,\
+		'jail_desc':init_jail_desc,\
+		'jail_data':init_jail_data,\
+		'jail_actionvars':init_jail_actionvars,\
+		'jail_filter':init_jail_filter,\
+		'jail_action':init_jail_action,\
+		'logpath':init_logpath,\
+		'enabled':init_enabled,\
+		})
+	context =  {
+		'form': form,
+	}
+	if request.method == "POST":
+		#print form
+		if form.is_valid():
+			qset.update(\
+				ignoreip = form.cleaned_data.get("ignoreip"),\
+				bantime = form.cleaned_data.get("bantime"),\
+				findtime = form.cleaned_data.get("findtime"),\
+				maxretry = form.cleaned_data.get("maxretry"),\
+				backend = form.cleaned_data.get("backend"),\
+				usedns = form.cleaned_data.get("usedns"),\
+				jail_name = form.cleaned_data.get("jail_name"),\
+				jail_desc = form.cleaned_data.get("jail_desc"),\
+				jail_data = form.cleaned_data.get("jail_data"),\
+				jail_actionvars = form.cleaned_data.get("jail_actionvars"),\
+				jail_filter = form.cleaned_data.get("jail_filter"),\
+				jail_action = form.cleaned_data.get("jail_action"),\
+				logpath = form.cleaned_data.get("logpath"),\
+				enabled = form.cleaned_data.get("enabled")\
+			)
+			return HttpResponseRedirect('/managejails/')
+		else:
+			pass
+	return render(request,"edit_jail.html", context)
+
+def manage_jails(request):
+	context =  {
+		'tlist': Jail.objects.order_by('jail_name'),
+	}
+	return render(request, 'manage_jails.html', context)
+
+def view_jail(request):
+	name = request.GET.get('name')
+	qset = Jail.objects.filter(jail_name=name)
+	if qset.count() < 1:
+		raise Exception('Jail entry with the given name doesn\'t exist')
+	elif qset.count() > 1:
+		raise Exception('More than one jails with the given name exists')
+	data = ''
+	for i in qset:
+		data += '['+i.jail_name+']<br><br>'
+		data += 'enabled = '+i.enabled +'<br>'
+		data += 'ignoreip = '+i.ignoreip +'<br>'
+		data += 'bantime = '+str(i.bantime) +'<br>'
+		data += 'findtime = '+str(i.findtime) +'<br>'
+		data += 'maxretry = '+str(i.maxretry) +'<br>'
+		data += 'backend = '+i.backend +'<br>'
+		data += 'usedns = '+i.usedns+'<br>'
+		data += 'filter = '+str(i.jail_filter)+'<br>'
+		data += 'action = '+str(i.jail_action) +'['+i.jail_actionvars+']<br>'
+		data += 'logpath = '+i.logpath +'<br>'
+		data += i.jail_data
+	context = {
+		'name' : name,
+		'data' : mark_safe(data),
+	}
+	return render(request, 'view.html', context)
+
+def delete_jail(request):
+	name = request.GET.get('name')
+	qset = Jail.objects.filter(jail_name=name)
+	if qset.count() < 1:
+		raise Exception('Jail entry with the given name doesn\'t exist')
+	elif qset.count() > 1:
+		raise Exception('More than one jails with the given name exists')
+	qset.delete()
+	return render(request, 'empty.html', {})
