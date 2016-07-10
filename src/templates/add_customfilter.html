@@ -41,6 +41,24 @@
 				</div>
 
 				<div class="formElement">
+					<!-- <label for="filter_desc">Description</label>
+					<textarea id="id_filter_desc" name="filter_desc"></textarea> -->
+					{% csrf_token %}
+    				{{ form.failregex.label_tag }}
+    				{{ form.failregex }}
+					<div class="fix"></div>
+				</div>
+
+				<div class="formElement">
+					<!-- <label for="filter_desc">Description</label>
+					<textarea id="id_filter_desc" name="filter_desc"></textarea> -->
+					{% csrf_token %}
+    				{{ form.ignoreregex.label_tag }}
+    				{{ form.ignoreregex }}
+					<div class="fix"></div>
+				</div>
+
+				<div class="formElement">
 					<!-- <label for="filter_data">Data</label>
 					<textarea id="id_filter_data" name="filter_data"></textarea> -->
 					{% csrf_token %}

@@ -78,4 +78,43 @@ class Jail(models.Model):
 	logpath = models.CharField(max_length=300)
 	enabled = models.CharField(max_length=6, choices=ENABLED_CHOICE, default='true')
 
+class CustomFilter(models.Model):
+	filter_name = models.CharField(max_length=20, unique=True)
+	filter_desc = models.CharField(max_length=500, null=True, blank=True)
+	failregex = models.CharField(max_length=3000)
+	ignoreregex = models.CharField(max_length=3000, null=True, blank=True)
+	filter_data = models.CharField(max_length=2000,  null=True, blank=True)
+	created = models.DateTimeField(auto_now=False, auto_now_add=True)
+	updated = models.DateTimeField(auto_now=True, auto_now_add=False)
+
+	def __unicode__(self):
+		return self.filter_name
+
+class CustomAction(models.Model):
+	action_name = models.CharField(max_length=20, unique=True)
+	action_desc = models.CharField(max_length=500, null=True, blank=True)
+	BLOCKTYPE_CHOICE = (
+		('iptables', 'Iptables'),
+		('tcp-wrapper', 'TCP-Wrapper'),
+	)
+	block_type = models.CharField(max_length=40, choices=BLOCKTYPE_CHOICE, default='iptables')
+	ip_chain = models.CharField(max_length=20, null=True, blank=True)
+	IPBLOCKTYPE_CHOICE = (
+		('drop', 'Drop'),
+		('reject', 'Reject with ICMP Message'),
+	)
+	ip_block_type = models.CharField(max_length=40, choices=IPBLOCKTYPE_CHOICE, default='drop', null=True, blank=True)
+	tcp_file = models.CharField(max_length=80, null=True, blank=True)
+	TCPBLOCKTYPE_CHOICE = (
+		('ALL', 'ALL'),
+		('SSH', 'SSH'),
+	)
+	tcp_block_type = models.CharField(max_length=20, choices=TCPBLOCKTYPE_CHOICE, default='ALL', null=True, blank=True)
+	action_data = models.CharField(max_length=2000, null=True, blank=True)
+	created = models.DateTimeField(auto_now=False, auto_now_add=True)
+	updated = models.DateTimeField(auto_now=True, auto_now_add=False)
+
+	def __unicode__(self):
+		return self.action_name
+
 

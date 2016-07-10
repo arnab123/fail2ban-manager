@@ -5,6 +5,12 @@ from .forms import FilterForm
 from .forms import ActionForm
 from .forms import FilterEditForm
 from .forms import ActionEditForm
+
+from .forms import CustomFilterForm
+from .forms import CustomActionForm
+from .forms import CustomFilterEditForm
+from .forms import CustomActionEditForm
+
 from .forms import DefaultJailEditForm
 from .forms import JailForm
 from .forms import JailEditForm
@@ -12,6 +18,8 @@ from django.db import IntegrityError
 
 from .models import Filter
 from .models import Action
+from .models import CustomFilter
+from .models import CustomAction
 from .models import DefaultJail
 from .models import Jail
 
@@ -481,3 +489,114 @@ def delete_jail(request):
 		raise Exception('More than one jails with the given name exists')
 	qset.delete()
 	return render(request, 'empty.html', {})
+
+def add_customfilter(request):
+	default_failregex = ''
+	form = CustomFilterForm(request.POST or None, initial={'failregex': default_failregex})
+	context =  {
+		'form': form,
+		'name_error': '0',
+	}
+	if request.method == "POST":
+		if form.is_valid():
+			form.save()
+			return HttpResponseRedirect('/managecustomfilters/')
+		else:
+			if CustomFilter.objects.filter(filter_name=form.data['filter_name']).count() > 0:
+				context['name_error']='1'
+	return render(request,"add_customfilter.html", context)
+
+def edit_customfilter(request):
+	init_name = ''
+	init_data = ''
+	init_desc = ''
+	init_fail = ''
+	init_ignore = ''
+	req = request.GET
+	name = req.get('name')
+	qset = CustomFilter.objects.filter(filter_name=name)
+	if qset.count() < 1:
+		raise Exception('Filter entry with the given name doesn\'t exist')
+	elif qset.count() > 1:
+		raise Exception('More than one filters with the given name exists')
+	for i in qset:
+		init_name = i.filter_name
+		init_data = i.filter_data
+		init_desc = i.filter_desc
+		init_fail = i.failregex
+		init_ignore = i.ignoreregex
+	form = CustomFilterEditForm(request.POST or None, initial={'filter_name': init_name, \
+		'filter_desc': init_desc, 'filter_data': init_data, 'failregex': init_fail, \
+		'ignoreregex': init_ignore})
+	context =  {
+		'form': form,
+		'name_error': '0',
+	}
+	if request.method == "POST":
+		if form.is_valid():
+			name_data = form.cleaned_data.get("filter_name")
+			desc_data = form.cleaned_data.get("filter_desc")
+			fail_data = form.cleaned_data.get("failregex")
+			ignore_data = form.cleaned_data.get("ignoreregex")
+			data_data = form.cleaned_data.get("filter_data")
+			# print name_data			# print desc_data    # print data_data
+			try:
+				qset.update(filter_name=name_data, filter_desc=desc_data, filter_data=data_data,\
+					failregex=fail_data, ignoreregex=ignore_data)
+				return HttpResponseRedirect('/managecustomfilters/')
+			except IntegrityError as e:
+				context['name_error']='1'
+		else:
+			pass
+	return render(request,"edit_customfilter.html", context)
+
+def manage_customfilters(request):
+	context =  {
+		'tlist': CustomFilter.objects.order_by('filter_name'),
+	}
+	return render(request, 'manage_filters.html', context)
+
+def view_customfilter(request):
+	name = request.GET.get('name')
+	qset = CustomFilter.objects.filter(filter_name=name)
+	if qset.count() < 1:
+		raise Exception('Filter entry with the given name doesn\'t exist')
+	elif qset.count() > 1:
+		raise Exception('More than one filters with the given name exists')
+	data = ''
+	for i in qset:
+		data = i.filter_data
+		fail = i.failregex
+		ignore = i.ignoreregex
+	context = {
+		'name' : name,
+		'data' : mark_safe('Fail Regex : '+ fail + '<br><br>' + 'Ignore Regex :                      ' + ignore \
+		 + '<br><br>' + data),
+	}
+	return render(request, 'view.html', context)
+
+def delete_customfilter(request):
+	name = request.GET.get('name')
+	qset = CustomFilter.objects.filter(filter_name=name)
+	if qset.count() < 1:
+		raise Exception('Filter entry with the given name doesn\'t exist')
+	elif qset.count() > 1:
+		raise Exception('More than one filters with the given name exists')
+	qset.delete()
+	return render(request, 'empty.html', {})
+
+def add_customaction(request):
+	form = CustomActionForm(request.POST or None, initial={'block_type': 'iptables'})
+	context =  {
+		'form': form,
+		'name_error': '0',
+	}
+	if request.method == "POST":
+		if form.is_valid():
+			form.save()
+			return HttpResponseRedirect('/managecustomactions/')
+		else:
+			if CustomAction.objects.filter(action_name=form.data['action_name']).count() > 0:
+				context['name_error']='1'
+	return render(request,"add_customaction.html", context)
+

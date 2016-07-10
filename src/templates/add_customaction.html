@@ -40,6 +40,51 @@
 					<div class="fix"></div>
 				</div>
 
+				<div class="formElement" id="tcpip">
+					<!-- <label for="action_desc">Description</label>
+					<textarea id="id_action_desc" name="action_desc"></textarea> -->
+					{% csrf_token %}
+    				{{ form.block_type.label_tag }}
+    				{{ form.block_type }}
+					<div class="fix"></div>
+				</div>
+
+				<div class="formElement" id="ip1">
+					<!-- <label for="action_desc">Description</label>
+					<textarea id="id_action_desc" name="action_desc"></textarea> -->
+					{% csrf_token %}
+    				{{ form.ip_chain.label_tag }}
+    				{{ form.ip_chain }}
+					<div class="fix"></div>
+				</div>
+
+				<div class="formElement" id="ip2">
+					<!-- <label for="action_desc">Description</label>
+					<textarea id="id_action_desc" name="action_desc"></textarea> -->
+					{% csrf_token %}
+    				{{ form.ip_block_type.label_tag }}
+    				{{ form.ip_block_type }}
+					<div class="fix"></div>
+				</div>
+
+				<div class="formElement" id="tcp1">
+					<!-- <label for="action_desc">Description</label>
+					<textarea id="id_action_desc" name="action_desc"></textarea> -->
+					{% csrf_token %}
+    				{{ form.tcp_file.label_tag }}
+    				{{ form.tcp_file }}
+					<div class="fix"></div>
+				</div>
+
+				<div class="formElement" id="tcp2">
+					<!-- <label for="action_desc">Description</label>
+					<textarea id="id_action_desc" name="action_desc"></textarea> -->
+					{% csrf_token %}
+    				{{ form.tcp_block_type.label_tag }}
+    				{{ form.tcp_block_type }}
+					<div class="fix"></div>
+				</div>
+
 				<div class="formElement">
 					<!-- <label for="action_data">Data</label>
 					<textarea id="id_action_data" name="action_data"></textarea> -->
