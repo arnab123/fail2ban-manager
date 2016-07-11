@@ -51,6 +51,14 @@ class CustomAction(models.Model):
 		('reject', 'Reject with ICMP Message'),
 	)
 	ip_block_type = models.CharField(max_length=40, choices=IPBLOCKTYPE_CHOICE, default='drop', null=True, blank=True)
+	ip_port = models.CharField(max_length=30, default='ssh', null=True, blank=True)
+	IPPROTOCOL_CHOICE = (
+		('tcp', 'TCP'),
+		('udp', 'UDP'),
+		('icmp', 'ICMP'),
+		('all', 'ALL'),
+	)
+	ip_protocol = models.CharField(max_length=10, choices=IPPROTOCOL_CHOICE, default='tcp', null=True, blank=True)
 	tcp_file = models.CharField(max_length=80, null=True, blank=True)
 	TCPBLOCKTYPE_CHOICE = (
 		('ALL', 'ALL'),

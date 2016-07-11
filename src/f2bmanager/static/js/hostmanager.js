@@ -14,6 +14,7 @@ $(document).ready(function() {
               },
               success: function (response) {
                   console.log("success")
+                  console.log(new Date().toLocaleString())
               }
             });
         });

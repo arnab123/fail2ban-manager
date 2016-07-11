@@ -140,6 +140,8 @@ class CustomActionForm(forms.ModelForm):
 	block_type = forms.ChoiceField(label='Block Using', choices=CustomAction.BLOCKTYPE_CHOICE)
 	ip_chain = forms.CharField(label='New Chain Name', max_length=100)
 	ip_block_type = forms.ChoiceField(label='Block Type', choices=CustomAction.IPBLOCKTYPE_CHOICE)
+	ip_port = forms.CharField(label='Port (# or name)', max_length=30)
+	ip_protocol = forms.ChoiceField(label='Protocol', choices=CustomAction.IPPROTOCOL_CHOICE)
 	tcp_file = forms.CharField(label='', max_length=300)
 	tcp_block_type = forms.ChoiceField(label='Block Type', choices=CustomAction.TCPBLOCKTYPE_CHOICE)
 	action_data = forms.CharField(label='Data', max_length=2000, widget=forms.Textarea())
@@ -157,6 +159,10 @@ class CustomActionForm(forms.ModelForm):
 		return self.cleaned_data.get('ip_chain')
 	def clean_ip_block_type(self):
 		return self.cleaned_data.get('ip_block_type')
+	def clean_ip_port(self):
+		return self.cleaned_data.get('ip_port')
+	def clean_ip_protocol(self):
+		return self.cleaned_data.get('ip_protocol')
 	def clean_tcp_file(self):
 		return self.cleaned_data.get('tcp_file')
 	def clean_tcp_block_type(self):
@@ -189,6 +195,8 @@ class CustomActionEditForm(forms.Form):
 	block_type = forms.ChoiceField(label='Block Using', choices=CustomAction.BLOCKTYPE_CHOICE)
 	ip_chain = forms.CharField(label='New Chain Name', max_length=100)
 	ip_block_type = forms.ChoiceField(label='Block Type', choices=CustomAction.IPBLOCKTYPE_CHOICE)
+	ip_port = forms.CharField(label='Port (# or name)', max_length=30)
+	ip_protocol = forms.ChoiceField(label='Protocol', choices=CustomAction.IPPROTOCOL_CHOICE)
 	tcp_file = forms.CharField(label='', max_length=300)
 	tcp_block_type = forms.ChoiceField(label='Block Type', choices=CustomAction.TCPBLOCKTYPE_CHOICE)
 	action_data = forms.CharField(label='Data', max_length=2000, widget=forms.Textarea())

@@ -67,6 +67,24 @@
 					<div class="fix"></div>
 				</div>
 
+				<div class="formElement" id="ip3">
+					<!-- <label for="action_desc">Description</label>
+					<textarea id="id_action_desc" name="action_desc"></textarea> -->
+					{% csrf_token %}
+    				{{ form.ip_port.label_tag }}
+    				{{ form.ip_port }}
+					<div class="fix"></div>
+				</div>
+
+				<div class="formElement" id="ip4">
+					<!-- <label for="action_desc">Description</label>
+					<textarea id="id_action_desc" name="action_desc"></textarea> -->
+					{% csrf_token %}
+    				{{ form.ip_protocol.label_tag }}
+    				{{ form.ip_protocol }}
+					<div class="fix"></div>
+				</div>
+
 				<div class="formElement" id="tcp1">
 					<!-- <label for="action_desc">Description</label>
 					<textarea id="id_action_desc" name="action_desc"></textarea> -->

@@ -30,6 +30,8 @@ from .models import Jail
 from .models import Host
 from .models import Membership
 
+from .strings import Res
+
 import datetime
 
 
@@ -75,8 +77,8 @@ def onActionEdit(name):
 
 
 
-def makeJailData(name):
-	i = Jail.objects.get(jail_name=name)
+def makeJailData(i):
+#	i = Jail.objects.get(jail_name=name)
 	data = ''
 	data += '['+i.jail_name+']\n\n'
 	data += 'enabled = '+i.enabled +'\n'
@@ -103,11 +105,45 @@ def onDeploy():
 	os.system('echo \"' + temp + '\" > /etc/fail2ban/jail.local')
 	fail_restart()
 
+def addFilterRemote(filt):
+	filt_data = Res.filter_sshd.replace("<<failregex>>", filt.failregex)
+	filt_data = filt_data.replace("<<ignoreregex>>", filt.ignoreregex)
+	filt_name = filt.filter_name
+	#add
+
+def delFilterRemote(filt):
+	filt_name = filt.filter_name
+	#add
+
+def addActionRemote(act):
+	act_data = ''
+	act_name = act.action_name
+	if act.block_type == "iptables":
+		act_data = Res.action_iptables.replace("<<name>>",act.ip_chain)
+		act_data = act_data.replace("<<port>>",act.ip_port)
+		act_data = act_data.replace("<<protocol>>",act.ip_port)
+		act_data = act_data.replace("<<blocktype>>",act.ip_block_type)
+	elif act.block_type == "tcp-wrapper":
+		act_data = Res.action_hostsdeny.replace("<<file>>",act.tcp_file)
+		act_data = act_data.replace("<<blocktype>>",act.tcp_block_type)
+
+def delActionRemote(act):
+	act_name = act.action_name
+
+
+def addJailRemote(jail):
+	addFilterRemote(jail.jail_filter)
+	addActionRemote(jail.jail_action)
+	print makeJailData(jail)
+
+def delJailRemote(jail):
+	delFilterRemote(jail.jail_filter)
+	delActionRemote(jail.jail_action)
 
 
 def home(request):
-	print Host.objects.get(host_name='host4').jail.all()
-
+	c = Jail.objects.get(jail_name='jail2')
+	delJailRemote(c)
 	return render(request,"home.html", {})
 
 def add_filter(request):
@@ -582,7 +618,7 @@ def view_customfilter(request):
 		ignore = i.ignoreregex
 	context = {
 		'name' : name,
-		'data' : mark_safe('Fail Regex : '+ fail + '<br><br>' + 'Ignore Regex :                      ' + ignore \
+		'data' : mark_safe('Fail Regex : '+ fail + '<br><br>' + 'Ignore Regex : ' + ignore \
 		 + '<br><br>' + data),
 	}
 	return render(request, 'view.html', context)
@@ -611,6 +647,128 @@ def add_customaction(request):
 			if CustomAction.objects.filter(action_name=form.data['action_name']).count() > 0:
 				context['name_error']='1'
 	return render(request,"add_customaction.html", context)
+
+def edit_customaction(request):
+	init_name = ''
+	init_data = ''
+	init_desc = ''
+	init_block_type = ''
+	init_ip_chain = ''
+	init_ip_block_type = ''
+	init_ip_port = ''
+	init_ip_protocol = ''
+	init_tcp_file = ''
+	init_tcp_block_type = ''
+	req = request.GET
+	name = req.get('name')
+	qset = CustomAction.objects.filter(action_name=name)
+	if qset.count() < 1:
+		raise Exception('Action entry with the given name doesn\'t exist')
+	elif qset.count() > 1:
+		raise Exception('More than one actions with the given name exists')
+	for i in qset:
+		init_name = i.action_name
+		init_data = i.action_data
+		init_desc = i.action_desc
+		init_block_type = i.block_type
+		init_ip_chain = i.ip_chain
+		init_ip_block_type = i.ip_block_type
+		init_ip_port = i.ip_port
+		init_ip_protocol = i.ip_protocol
+		init_tcp_file = i.tcp_file
+		init_tcp_block_type = i.tcp_block_type
+	form = CustomActionEditForm(request.POST or None, initial={'action_name': init_name, \
+		'action_desc': init_desc, 'action_data': init_data, \
+		'block_type': init_block_type, \
+		'ip_chain': init_ip_chain, \
+		'ip_block_type': init_ip_block_type, \
+		'ip_port': init_ip_port, \
+		'ip_protocol': init_ip_protocol, \
+		'tcp_file': init_tcp_file, \
+		'tcp_block_type': init_tcp_block_type, })
+	context =  {
+		'form': form,
+		'name_error': '0',
+	}
+	if request.method == "POST":
+		if form.is_valid():
+			name_data = form.cleaned_data.get("action_name")
+			desc_data = form.cleaned_data.get("action_desc")
+			data_data = form.cleaned_data.get("action_data")
+			block_type_data = form.cleaned_data.get("block_type")
+			ip_chain_data = form.cleaned_data.get("ip_chain")
+			ip_block_type_data = form.cleaned_data.get("ip_block_type")
+			ip_port_data = form.cleaned_data.get("ip_port")
+			ip_protocol_data = form.cleaned_data.get("ip_protocol")
+			tcp_file_data = form.cleaned_data.get("tcp_file")
+			tcp_block_type_data = form.cleaned_data.get("tcp_block_type")
+			# print name_data			# print desc_data    # print data_data
+			try:
+				qset.update(action_name=name_data, action_desc=desc_data, action_data=data_data,\
+					block_type=block_type_data,\
+					ip_chain=ip_chain_data,\
+					ip_port=ip_port_data,\
+					ip_protocol=ip_protocol_data,\
+					ip_block_type=ip_block_type_data,\
+					tcp_file=tcp_file_data,\
+					tcp_block_type=tcp_block_type_data,)
+				return HttpResponseRedirect('/managecustomactions/')
+			except IntegrityError as e:
+				context['name_error']='1'
+		else:
+			pass
+	return render(request,"edit_customaction.html", context)
+
+def manage_customactions(request):
+	context =  {
+		'tlist': CustomAction.objects.order_by('action_name'),
+	}
+	return render(request, 'manage_actions.html', context)
+
+def view_customaction(request):
+	name = request.GET.get('name')
+	qset = CustomAction.objects.filter(action_name=name)
+	if qset.count() < 1:
+		raise Exception('Action entry with the given name doesn\'t exist')
+	elif qset.count() > 1:
+		raise Exception('More than one actions with the given name exists')
+	act_data = ''
+	for i in qset:
+		data = i.action_data
+		init_block_type = i.block_type
+		init_ip_chain = i.ip_chain
+		init_ip_block_type = i.ip_block_type
+		init_ip_port = i.ip_port
+		init_ip_protocol = i.ip_protocol
+		init_tcp_file = i.tcp_file
+		init_tcp_block_type = i.tcp_block_type
+	if init_block_type == 'iptables':
+		act_data += 'Block Using : '+ init_block_type + '<br>'
+		act_data += 'Chain Name : '+ init_ip_chain + '<br>'
+		act_data += 'Block Type : '+ init_ip_block_type + '<br>'
+		act_data += 'Port : '+ init_ip_port + '<br>'
+		act_data += 'Protocol : '+ init_ip_protocol + '<br>'
+		act_data += data + '<br><br>'
+	elif init_block_type == 'tcp-wrapper':
+		act_data += 'Block Using : '+ init_block_type + '<br>'
+		act_data += 'TCP block file : '+ init_tcp_file + '<br>'
+		act_data += 'Block Type : '+ init_tcp_block_type + '<br>'
+		act_data += data + '<br><br>'
+	context = {
+		'name' : name,
+		'data' : mark_safe(act_data),
+	}
+	return render(request, 'view.html', context)
+
+def delete_customaction(request):
+	name = request.GET.get('name')
+	qset = CustomAction.objects.filter(action_name=name)
+	if qset.count() < 1:
+		raise Exception('Action entry with the given name doesn\'t exist')
+	elif qset.count() > 1:
+		raise Exception('More than one actions with the given name exists')
+	qset.delete()
+	return render(request, 'empty.html', {})
 
 
 def add_host(request):
@@ -740,7 +898,7 @@ def get_log(request):
 		ip = i.ip
 	#fetch log(host_name,ip)
 	#if not raise error
-	qset.update(log='test')
+	qset.update(log='test', updated=datetime.datetime.now())
 	return render(request, 'empty.html', {})
 
 def multi_add(request):
