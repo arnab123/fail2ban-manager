@@ -46,5 +46,12 @@ urlpatterns = [
  #    url(r'^deletecustomaction/', views.delete_customaction, name='deletecustomaction'),
     url(r'^managecustomfilters/', views.manage_customfilters, name='managecustomfilters'),
  #    url(r'^managecustomactions/', views.manage_customactions, name='managecustomactions'),
+	url(r'^addhost/', views.add_host, name='addhost'),
+	url(r'^edithost/', views.edit_host, name='edithost'),
+	url(r'^managehosts/', views.manage_hosts, name='managehosts'),
+	url(r'^deletehost/', views.delete_host, name='deletehost'),
+	url(r'^viewlog/', views.view_log, name='viewlog'),
+	url(r'^getlog/', views.get_log, name='getlog'),
+	url(r'^multiadd/', views.multi_add, name='multiadd'),
 	url(r'^$', views.home, name='home'),
 ]

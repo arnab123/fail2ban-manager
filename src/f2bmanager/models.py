@@ -24,6 +24,46 @@ class Action(models.Model):
 	def __unicode__(self):
 		return self.action_name
 
+
+class CustomFilter(models.Model):
+	filter_name = models.CharField(max_length=20, unique=True)
+	filter_desc = models.CharField(max_length=500, null=True, blank=True)
+	failregex = models.CharField(max_length=3000)
+	ignoreregex = models.CharField(max_length=3000, null=True, blank=True)
+	filter_data = models.CharField(max_length=2000,  null=True, blank=True)
+	created = models.DateTimeField(auto_now=False, auto_now_add=True)
+	updated = models.DateTimeField(auto_now=True, auto_now_add=False)
+
+	def __unicode__(self):
+		return self.filter_name
+
+class CustomAction(models.Model):
+	action_name = models.CharField(max_length=20, unique=True)
+	action_desc = models.CharField(max_length=500, null=True, blank=True)
+	BLOCKTYPE_CHOICE = (
+		('iptables', 'Iptables'),
+		('tcp-wrapper', 'TCP-Wrapper'),
+	)
+	block_type = models.CharField(max_length=40, choices=BLOCKTYPE_CHOICE, default='iptables')
+	ip_chain = models.CharField(max_length=20, null=True, blank=True)
+	IPBLOCKTYPE_CHOICE = (
+		('drop', 'Drop'),
+		('reject', 'Reject with ICMP Message'),
+	)
+	ip_block_type = models.CharField(max_length=40, choices=IPBLOCKTYPE_CHOICE, default='drop', null=True, blank=True)
+	tcp_file = models.CharField(max_length=80, null=True, blank=True)
+	TCPBLOCKTYPE_CHOICE = (
+		('ALL', 'ALL'),
+		('SSH', 'SSH'),
+	)
+	tcp_block_type = models.CharField(max_length=20, choices=TCPBLOCKTYPE_CHOICE, default='ALL', null=True, blank=True)
+	action_data = models.CharField(max_length=2000, null=True, blank=True)
+	created = models.DateTimeField(auto_now=False, auto_now_add=True)
+	updated = models.DateTimeField(auto_now=True, auto_now_add=False)
+
+	def __unicode__(self):
+		return self.action_name
+
 class DefaultJail(models.Model):
 	BACKEND_CHOICE = (
 		('auto', 'Auto'),
@@ -73,48 +113,39 @@ class Jail(models.Model):
 	jail_desc = models.CharField(max_length=500, blank=True)
 	jail_data = models.CharField(max_length=1000, blank=True)
 	jail_actionvars = models.CharField(max_length=200, blank=True)
-	jail_filter = models.ForeignKey(Filter, blank=True)
-	jail_action = models.ForeignKey(Action, blank=True)
+	jail_filter = models.ForeignKey(CustomFilter, blank=True)
+	jail_action = models.ForeignKey(CustomAction, blank=True)
 	logpath = models.CharField(max_length=300)
 	enabled = models.CharField(max_length=6, choices=ENABLED_CHOICE, default='true')
 
-class CustomFilter(models.Model):
-	filter_name = models.CharField(max_length=20, unique=True)
-	filter_desc = models.CharField(max_length=500, null=True, blank=True)
-	failregex = models.CharField(max_length=3000)
-	ignoreregex = models.CharField(max_length=3000, null=True, blank=True)
-	filter_data = models.CharField(max_length=2000,  null=True, blank=True)
-	created = models.DateTimeField(auto_now=False, auto_now_add=True)
-	updated = models.DateTimeField(auto_now=True, auto_now_add=False)
+	def __unicode__(self):
+		return self.jail_name
+
+
+class Host(models.Model):
+	host_name = models.CharField(max_length=200, unique=True)
+	ip = models.CharField(max_length=30, unique=True)
+	jail = models.ManyToManyField(Jail, through='Membership')
+	log = models.TextField(null=True)
+	updated = models.DateTimeField(null=True)
+	days = models.IntegerField(default=5)
 
 	def __unicode__(self):
-		return self.filter_name
+		return self.host_name
 
-class CustomAction(models.Model):
-	action_name = models.CharField(max_length=20, unique=True)
-	action_desc = models.CharField(max_length=500, null=True, blank=True)
-	BLOCKTYPE_CHOICE = (
-		('iptables', 'Iptables'),
-		('tcp-wrapper', 'TCP-Wrapper'),
-	)
-	block_type = models.CharField(max_length=40, choices=BLOCKTYPE_CHOICE, default='iptables')
-	ip_chain = models.CharField(max_length=20, null=True, blank=True)
-	IPBLOCKTYPE_CHOICE = (
-		('drop', 'Drop'),
-		('reject', 'Reject with ICMP Message'),
-	)
-	ip_block_type = models.CharField(max_length=40, choices=IPBLOCKTYPE_CHOICE, default='drop', null=True, blank=True)
-	tcp_file = models.CharField(max_length=80, null=True, blank=True)
-	TCPBLOCKTYPE_CHOICE = (
-		('ALL', 'ALL'),
-		('SSH', 'SSH'),
-	)
-	tcp_block_type = models.CharField(max_length=20, choices=TCPBLOCKTYPE_CHOICE, default='ALL', null=True, blank=True)
-	action_data = models.CharField(max_length=2000, null=True, blank=True)
+
+class Membership(models.Model):
+	host = models.ForeignKey(Host, on_delete=models.CASCADE)
+	jail = models.ForeignKey(Jail, on_delete=models.CASCADE)
+	addedon = models.DateTimeField(auto_now=False, auto_now_add=True)
+
+	class Meta:
+		unique_together = ('host', 'jail',)
+
+class User(models.Model):
+	name = models.CharField(max_length=64, primary_key=True)
+	passwd = models.CharField(max_length=128)
 	created = models.DateTimeField(auto_now=False, auto_now_add=True)
 	updated = models.DateTimeField(auto_now=True, auto_now_add=False)
-
-	def __unicode__(self):
-		return self.action_name
 
 

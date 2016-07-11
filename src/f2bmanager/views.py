@@ -14,6 +14,11 @@ from .forms import CustomActionEditForm
 from .forms import DefaultJailEditForm
 from .forms import JailForm
 from .forms import JailEditForm
+
+from .forms import HostForm
+from .forms import HostEditForm
+from .forms import MultiAddForm
+
 from django.db import IntegrityError
 
 from .models import Filter
@@ -22,6 +27,11 @@ from .models import CustomFilter
 from .models import CustomAction
 from .models import DefaultJail
 from .models import Jail
+from .models import Host
+from .models import Membership
+
+import datetime
+
 
 from django.utils.safestring import mark_safe
 
@@ -96,10 +106,12 @@ def onDeploy():
 
 
 def home(request):
-	onDeploy()
+	print Host.objects.get(host_name='host4').jail.all()
+
 	return render(request,"home.html", {})
 
 def add_filter(request):
+
 	default_filter_data = '[INCLUDES]\n\n# Read common prefixes. \
 If any customizations available -- read them from\n# common.local\nbefore =\
 common.conf\n\n\n[Definition]\n\nfailregex = \n\nignoreregex = '
@@ -600,3 +612,157 @@ def add_customaction(request):
 				context['name_error']='1'
 	return render(request,"add_customaction.html", context)
 
+
+def add_host(request):
+	form = HostForm(request.POST or None)
+	context =  {
+		'form': form,
+		'name_error': '0',
+	}
+	if request.method == "POST":
+		if form.is_valid():
+			instance = form.save(commit=False)
+			host_name = form.cleaned_data.get('host_name')
+			jail_names = form.cleaned_data.get('jail')
+			instance.ip = form.cleaned_data.get('ip')
+			instance.host_name = host_name
+			instance.save()
+			for jail_name in jail_names:
+				jailobj = Jail.objects.get(jail_name=jail_name)
+				#add jailobj.filter
+				# add jailobj.action
+				# add jailobj jail
+				# if succesful
+				Membership.objects.create(host=Host.objects.get(host_name=host_name), \
+					jail=Jail.objects.get(jail_name=jail_name))
+			return HttpResponseRedirect('/managehosts/')
+		else:
+			if Host.objects.filter(host_name=form.data['host_name']).count() > 0:
+				context['name_error']='1'
+	return render(request,"add_host.html", context)
+
+def edit_host(request):
+	req = request.GET
+	name = req.get('name')
+	print name
+	host = Host.objects.get(host_name=name)
+	init_name = host.host_name
+	init_ip = host.ip
+	init_days = host.days
+	init_jail = host.jail
+	print init_jail.all()
+	form = HostEditForm(request.POST or None, initial={'host_name':init_name,\
+		'ip':init_ip, 'days':init_days, 'jail':init_jail.all()})
+	context =  {
+		'form': form,
+		'name_error': '0',
+	}
+	if request.method == "POST":
+		if form.is_valid():
+			name_data = form.cleaned_data.get("host_name")
+			ip_data = form.cleaned_data.get("ip")
+			days_data = form.cleaned_data.get("days")
+			jail_data = form.cleaned_data.get("jail")
+			# print name_data			# print desc_data    # print data_data
+			try:
+				Host.objects.filter(host_name=name).update(host_name=name_data, ip=ip_data, days=days_data)
+				delset = set(init_jail.all()).difference(set(jail_data))
+				addset = set(jail_data).difference(set(init_jail.all()))
+				qset = Membership.objects.filter(host=host)
+				for oldjail in delset:
+					oldjailobj = Jail.objects.get(jail_name=oldjail)
+					#delete oldjailobj.filter
+					#delete oldjailobj.action
+					#delete oldjailobj jail
+					#if succesful
+					qset.filter(jail=oldjailobj).delete()
+				for newjail in addset:
+					newjailobj = Jail.objects.get(jail_name=newjail)
+					#add oldjailobj.filter
+					#add oldjailobj.action
+					#add oldjailobj jail
+					#if succesful
+					Membership.objects.create(host=host, jail=newjailobj)
+				return HttpResponseRedirect('/managehosts/')
+			except IntegrityError as e:
+				context['name_error']='1'
+		else:
+			pass
+	return render(request,"edit_host.html", context)
+
+def view_log(request):
+	name = request.GET.get('name')
+	qset = Host.objects.filter(host_name=name)
+	if qset.count() < 1:
+		raise Exception('host entry with the given name doesn\'t exist')
+	elif qset.count() > 1:
+		raise Exception('More than one hosts with the given name exists')
+	data = ''
+	for i in qset:
+		log = i.log
+	context = {
+		'name' : name + 'Log',
+		'data' : mark_safe(log),
+	}
+	return render(request, 'view.html', context)
+
+def delete_host(request):
+	name = request.GET.get('name')
+	qset = Host.objects.filter(host_name=name)
+	if qset.count() < 1:
+		raise Exception('Filter entry with the given name doesn\'t exist')
+	elif qset.count() > 1:
+		raise Exception('More than one filters with the given name exists')
+	delset = Membership.objects.filter(host=Host.objects.get(host_name=name))
+	for i in delset:
+		pass
+		#i.jail del
+	#if success
+	qset.delete()
+	return render(request, 'empty.html', {})
+
+def manage_hosts(request):
+	context =  {
+		'tlist': Host.objects.order_by('host_name'),
+	}
+	return render(request, 'manage_hosts.html', context)
+
+def get_log(request):
+	name = request.GET.get('name')
+	qset = Host.objects.filter(host_name=name)
+	if qset.count() < 1:
+		raise Exception('host entry with the given name doesn\'t exist')
+	elif qset.count() > 1:
+		raise Exception('More than one hosts with the given name exists')
+	data = ''
+	for i in qset:
+		host_name = i.host_name
+		ip = i.ip
+	#fetch log(host_name,ip)
+	#if not raise error
+	qset.update(log='test')
+	return render(request, 'empty.html', {})
+
+def multi_add(request):
+	form = MultiAddForm(request.POST or None)
+	context =  {
+		'form': form,
+	}
+	if request.method == "POST":
+		if form.is_valid():
+			host_names = form.cleaned_data.get('host')
+			jail_names = form.cleaned_data.get('jail')
+
+			for host_name in host_names:
+				for jail_name in jail_names:
+					try :
+						Membership.objects.create(host=Host.objects.get(host_name=host_name),\
+							jail=Jail.objects.get(jail_name=jail_name))
+						jailobj = Jail.objects.get(jail_name=jail_name)
+					except Exception as e:
+						pass
+			return HttpResponseRedirect('/managehosts/')
+		else:
+			if Host.objects.filter(host_name=form.data['host_name']).count() > 0:
+				context['name_error']='1'
+	return render(request,"add_host.html", context)

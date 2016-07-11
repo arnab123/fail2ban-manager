@@ -1,0 +1,67 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Manage Hosts</title>
+    <!-- <link type="text/css" rel="stylesheet" href="{% static 'css/' %}" />  -->
+    
+  </head>
+  <body>
+    <script type="text/javascript" src="{% static 'jquery-3.0.0.min.js' %}"></script>
+    <div id="heading">
+      <h1 class="hea">HOSTS</h1>
+    </div>
+     <div id="mutiadddiv">
+      <button class="button" type="button" onclick="window.location.href = &quot;http://127.0.0.1:8000/multiadd/&quot;">Add Jails to multiple Hosts</button>
+    </div>
+    <div id="adddiv">
+      <button class="button" type="button" onclick="window.location.href = &quot;http://127.0.0.1:8000/addhost/&quot;">Add Host</button>
+    </div>
+    <div id="tablediv" >
+    <table id="maintable" style="width:100%">
+      <tr class="row">
+        <th class="nametd">Name</th>
+        <th >IP</th>
+        <th >Last updated on</th>
+        <th class="desctd">Log History (in days)</th> 
+        <th>Jails</th> 
+        <th class="viewtd">  </th>
+        <th class="gettd">  </th>
+        <th class="edittd">  </th>
+        <th class="deletetd"> </th> 
+      </tr>
+      {% for entry in tlist %}
+      <tr class="row">
+        <td class="nametd">{{ entry.host_name }}</td>
+        <td>{{ entry.ip }}</td> 
+        <td>{{ entry.updated }}</td> 
+        <td>{{ entry.days }}</td> 
+        <td>{% for jail_entry in entry.jail.all %} {{jail_entry}}, {% endfor %}</td>
+        <td class="viewtd"> <button class="viewbutton" type="button">View Log</button> </td>
+        <td class="gettd"> <button class="getbutton" type="button">Get Log</button> </td>
+        <td class="edittd"> <button class="editbutton" type="button">Edit</button> </td>
+        <td class="deletetd"> <button class="deletebutton" type="button">Delete</button> </td>
+      </tr>
+      {% endfor %}
+    </table>
+    </div>
+  <script type="text/javascript" src="{%static 'js/hostmanager.js' %}"> </script> 
+  {% block script %}
+  {% endblock %}
+  </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

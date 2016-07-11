@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+<form method="post" action="" onSubmit="">
+{% csrf_token %}
+{{ form.jail.label_tag }}
+{{ form.jail }}
+{{ form.host.label_tag }}
+{{ form.host }}
+<div>
+	<input type="submit" value="Add" />
+</div>
+</form>
+</body>
+</html>

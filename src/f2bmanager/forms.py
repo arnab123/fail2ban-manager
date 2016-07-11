@@ -6,6 +6,8 @@ from .models import DefaultJail
 from .models import Jail
 from .models import CustomFilter
 from .models import CustomAction
+from .models import Host
+from .models import Membership
 
 class FilterForm(forms.ModelForm):
 	filter_name = forms.CharField(label='Name', max_length=30, widget=forms.TextInput(attrs={'class': "inputtext", 'type': "text"}))
@@ -86,8 +88,8 @@ class JailForm(forms.ModelForm):
 	jail_desc = forms.CharField(label='Description', max_length=500, widget=forms.Textarea())
 	jail_data = forms.CharField(label='', max_length=1000, widget=forms.Textarea())
 	jail_actionvars = forms.CharField(label='Jail Action Variables', max_length=200, widget=forms.Textarea())
-	jail_filter = forms.ModelChoiceField(label='Filter', queryset=Filter.objects.all())
-	jail_action = forms.ModelChoiceField(label='Action', queryset=Action.objects.all())
+	jail_filter = forms.ModelChoiceField(label='Filter', queryset=CustomFilter.objects.all())
+	jail_action = forms.ModelChoiceField(label='Action', queryset=CustomAction.objects.all())
 	logpath = forms.CharField(label='Log Path', max_length=300)
 	enabled = forms.ChoiceField(label='Enable', choices=Jail.ENABLED_CHOICE)
 	class Meta:
@@ -105,8 +107,8 @@ class JailEditForm(forms.Form):
 	jail_desc = forms.CharField(label='Description', max_length=500, widget=forms.Textarea())
 	jail_data = forms.CharField(label='', max_length=1000, widget=forms.Textarea())
 	jail_actionvars = forms.CharField(label='Jail Action Variables', max_length=200, widget=forms.Textarea())
-	jail_filter = forms.ModelChoiceField(label='Filter', queryset=Filter.objects.all())
-	jail_action = forms.ModelChoiceField(label='Action', queryset=Action.objects.all())
+	jail_filter = forms.ModelChoiceField(label='Filter', queryset=CustomFilter.objects.all())
+	jail_action = forms.ModelChoiceField(label='Action', queryset=CustomAction.objects.all())
 	logpath = forms.CharField(label='Log Path', max_length=300)
 	enabled = forms.ChoiceField(label='Enable', choices=Jail.ENABLED_CHOICE)
 
@@ -207,3 +209,22 @@ class CustomActionEditForm(forms.Form):
 		return self.cleaned_data.get('tcp_block_type')
 	def clean_action_data(self):
 		return self.cleaned_data.get('action_data')
+
+class HostForm(forms.ModelForm):
+	host_name = forms.CharField(label='Name', max_length=200)
+	ip = forms.CharField(label='IP', max_length=30)
+	jail = forms.ModelMultipleChoiceField(label='Jails', queryset=Jail.objects.all())
+	days = forms.IntegerField(label='Fetch last n days of log')
+	class Meta:
+		model = Host
+		exclude = ['log', 'updated']
+
+class HostEditForm(forms.Form):
+	host_name = forms.CharField(label='Name', max_length=200)
+	ip = forms.CharField(label='IP', max_length=30)
+	jail = forms.ModelMultipleChoiceField(label='Jails', queryset=Jail.objects.all())
+	days = forms.IntegerField(label='Fetch last n days of log')
+
+class MultiAddForm(forms.Form):
+	host = forms.ModelMultipleChoiceField(label='to the following hosts', queryset=Host.objects.all())
+	jail = forms.ModelMultipleChoiceField(label='Add these jails', queryset=Jail.objects.all())
