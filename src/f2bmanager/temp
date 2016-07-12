@@ -1,0 +1,14 @@
+[jail1]
+
+enabled = true
+ignoreip = 1
+bantime = 1
+findtime = 1
+maxretry = 1
+backend = auto
+usedns = warn
+filter = filt1
+action = act1[1]
+logpath = 1
+1
+

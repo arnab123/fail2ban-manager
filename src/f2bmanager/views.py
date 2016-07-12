@@ -49,6 +49,10 @@ def fail_start():
 def fail_restart():
 	os.system('sudo fail2ban-client reload')	
 
+def remote_fail_restart(ip):
+	os.system('sshpass -p "fuck" ssh abhinav@10.42.0.64 "fail2ban-client start"')
+	#os.system('sudo fail2ban-client reload')	
+
 def make_file(location,name,data):
 	os.system('python f2bmanager/backend/make_file.py ' + location + ' ' + name + ' ' + data)
 
@@ -99,23 +103,29 @@ def onDeploy():
 	qset = Jail.objects.all()
 	temp = ''
 	for i in qset:
-		temp += makeJailData(i.jail_name)
+		temp += makeJailData(Jail.objects.get(jail_name=i.jail_name))
 		onFilterEdit(str(i.jail_filter))
 		onActionEdit(str(i.jail_action))
 	os.system('echo \"' + temp + '\" > /etc/fail2ban/jail.local')
 	fail_restart()
 
-def addFilterRemote(filt):
+def addFilterRemote(ip, filt):
 	filt_data = Res.filter_sshd.replace("<<failregex>>", filt.failregex)
 	filt_data = filt_data.replace("<<ignoreregex>>", filt.ignoreregex)
 	filt_name = filt.filter_name
+	file_name = filt_name+'.conf'
+	print filt_data
+	f = open('/home/arnab/django/proj/src/f2bmanager/'+file_name, 'w')
+	f.write(filt_data)
+	f.close()
+	os.system('sshpass -p "fuck" scp -r /home/arnab/django/proj/src/f2bmanager/'+file_name+' abhinav@10.42.0.64:/etc/fail2ban/filter.d/')
 	#add
 
-def delFilterRemote(filt):
+def delFilterRemote(ip, filt):
 	filt_name = filt.filter_name
 	#add
 
-def addActionRemote(act):
+def addActionRemote(ip, act):
 	act_data = ''
 	act_name = act.action_name
 	if act.block_type == "iptables":
@@ -126,24 +136,41 @@ def addActionRemote(act):
 	elif act.block_type == "tcp-wrapper":
 		act_data = Res.action_hostsdeny.replace("<<file>>",act.tcp_file)
 		act_data = act_data.replace("<<blocktype>>",act.tcp_block_type)
+	file_name = act_name+'.conf'
+	print act_data
+	f = open('/home/arnab/django/proj/src/f2bmanager/'+file_name, 'w')
+	f.write(act_data)
+	f.close()
+	os.system('sshpass -p "fuck" scp -r /home/arnab/django/proj/src/f2bmanager/'+file_name+' abhinav@10.42.0.64:/etc/fail2ban/action.d/')
+	
 
-def delActionRemote(act):
+def delActionRemote(ip, act):
 	act_name = act.action_name
 
 
-def addJailRemote(jail):
-	addFilterRemote(jail.jail_filter)
-	addActionRemote(jail.jail_action)
-	print makeJailData(jail)
+def addJailRemote(ip, jail):
+	addFilterRemote(ip, jail.jail_filter)
+	addActionRemote(ip, jail.jail_action)
+	jail_data = makeJailData(jail)
+	print "addedjail "+jail.jail_name
+	f = open('/home/arnab/django/proj/src/f2bmanager/temp', 'w')
+	f.write(jail_data)
+	f.close()
+	os.system('sshpass -p "fuck" scp -r /home/arnab/django/proj/src/f2bmanager/temp abhinav@10.42.0.64:/etc/fail2ban/')
+	os.system('sshpass -p "fuck" ssh abhinav@10.42.0.64 "cat /etc/fail2ban/temp >> /etc/fail2ban/jail.local"')
 
-def delJailRemote(jail):
-	delFilterRemote(jail.jail_filter)
-	delActionRemote(jail.jail_action)
+def delJailRemote(ip, jail):
+	delFilterRemote(ip, jail.jail_filter)
+	delActionRemote(ip, jail.jail_action)
+	jail_name = jail.jail_name
+	print "deleted jail" + jail_name
 
 
 def home(request):
-	c = Jail.objects.get(jail_name='jail2')
-	delJailRemote(c)
+	# c = Jail.objects.get(jail_name='jail1')
+	# # addActionRemote(1, c)
+	# addJailRemote(1, c)
+	remote_fail_restart(1)
 	return render(request,"home.html", {})
 
 def add_filter(request):
@@ -785,14 +812,14 @@ def add_host(request):
 			instance.ip = form.cleaned_data.get('ip')
 			instance.host_name = host_name
 			instance.save()
+			host = Host.objects.get(host_name=host_name)
 			for jail_name in jail_names:
 				jailobj = Jail.objects.get(jail_name=jail_name)
-				#add jailobj.filter
-				# add jailobj.action
-				# add jailobj jail
+				addJailRemote(host.ip, jailobj)
 				# if succesful
 				Membership.objects.create(host=Host.objects.get(host_name=host_name), \
 					jail=Jail.objects.get(jail_name=jail_name))
+			remote_fail_restart(host.ip)
 			return HttpResponseRedirect('/managehosts/')
 		else:
 			if Host.objects.filter(host_name=form.data['host_name']).count() > 0:
@@ -829,18 +856,15 @@ def edit_host(request):
 				qset = Membership.objects.filter(host=host)
 				for oldjail in delset:
 					oldjailobj = Jail.objects.get(jail_name=oldjail)
-					#delete oldjailobj.filter
-					#delete oldjailobj.action
-					#delete oldjailobj jail
+					delJailRemote(host.ip, oldjailobj)
 					#if succesful
 					qset.filter(jail=oldjailobj).delete()
 				for newjail in addset:
 					newjailobj = Jail.objects.get(jail_name=newjail)
-					#add oldjailobj.filter
-					#add oldjailobj.action
-					#add oldjailobj jail
+					addJailRemote(host.ip, newjailobj)
 					#if succesful
 					Membership.objects.create(host=host, jail=newjailobj)
+				remote_fail_restart(host.ip)
 				return HttpResponseRedirect('/managehosts/')
 			except IntegrityError as e:
 				context['name_error']='1'
@@ -871,10 +895,11 @@ def delete_host(request):
 		raise Exception('Filter entry with the given name doesn\'t exist')
 	elif qset.count() > 1:
 		raise Exception('More than one filters with the given name exists')
+	host = Host.objects.get(host_name=name)
 	delset = Membership.objects.filter(host=Host.objects.get(host_name=name))
 	for i in delset:
-		pass
-		#i.jail del
+		delJailRemote(host.ip, i.jail)
+	remote_fail_restart(host.ip)
 	#if success
 	qset.delete()
 	return render(request, 'empty.html', {})
@@ -912,11 +937,12 @@ def multi_add(request):
 			jail_names = form.cleaned_data.get('jail')
 
 			for host_name in host_names:
+				host = Host.objects.get(host_name=host_name)
 				for jail_name in jail_names:
 					try :
-						Membership.objects.create(host=Host.objects.get(host_name=host_name),\
-							jail=Jail.objects.get(jail_name=jail_name))
-						jailobj = Jail.objects.get(jail_name=jail_name)
+						jail=Jail.objects.get(jail_name=jail_name)
+						Membership.objects.create(host=host,jail=jail)
+						addJailRemote(host.ip, jail)
 					except Exception as e:
 						pass
 			return HttpResponseRedirect('/managehosts/')
