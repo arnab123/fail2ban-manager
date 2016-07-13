@@ -50,8 +50,9 @@ def fail_restart():
 	os.system('sudo fail2ban-client reload')	
 
 def remote_fail_restart(ip):
-	os.system('sshpass -p "fuck" ssh abhinav@10.42.0.64 "fail2ban-client start"')
-	#os.system('sudo fail2ban-client reload')	
+	#os.system('sshpass -p "" ssh @ "fail2ban-client start"')
+	#os.system('sudo fail2ban-client reload')
+	pass
 
 def make_file(location,name,data):
 	os.system('python f2bmanager/backend/make_file.py ' + location + ' ' + name + ' ' + data)
@@ -118,7 +119,7 @@ def addFilterRemote(ip, filt):
 	f = open('/home/arnab/django/proj/src/f2bmanager/'+file_name, 'w')
 	f.write(filt_data)
 	f.close()
-	os.system('sshpass -p "fuck" scp -r /home/arnab/django/proj/src/f2bmanager/'+file_name+' abhinav@10.42.0.64:/etc/fail2ban/filter.d/')
+	#os.system('sshpass -p "" scp -r /home/arnab/django/proj/src/f2bmanager/'+file_name+' @:/etc/fail2ban/filter.d/')
 	#add
 
 def delFilterRemote(ip, filt):
@@ -141,7 +142,7 @@ def addActionRemote(ip, act):
 	f = open('/home/arnab/django/proj/src/f2bmanager/'+file_name, 'w')
 	f.write(act_data)
 	f.close()
-	os.system('sshpass -p "fuck" scp -r /home/arnab/django/proj/src/f2bmanager/'+file_name+' abhinav@10.42.0.64:/etc/fail2ban/action.d/')
+	#os.system('sshpass -p "" scp -r /home/arnab/django/proj/src/f2bmanager/'+file_name+' @:/etc/fail2ban/action.d/')
 	
 
 def delActionRemote(ip, act):
@@ -156,8 +157,8 @@ def addJailRemote(ip, jail):
 	f = open('/home/arnab/django/proj/src/f2bmanager/temp', 'w')
 	f.write(jail_data)
 	f.close()
-	os.system('sshpass -p "fuck" scp -r /home/arnab/django/proj/src/f2bmanager/temp abhinav@10.42.0.64:/etc/fail2ban/')
-	os.system('sshpass -p "fuck" ssh abhinav@10.42.0.64 "cat /etc/fail2ban/temp >> /etc/fail2ban/jail.local"')
+	# os.system('sshpass -p "" scp -r /home/arnab/django/proj/src/f2bmanager/temp @:/etc/fail2ban/')
+	# os.system('sshpass -p "" ssh @ "cat /etc/fail2ban/temp >> /etc/fail2ban/jail.local"')
 
 def delJailRemote(ip, jail):
 	delFilterRemote(ip, jail.jail_filter)
@@ -459,7 +460,7 @@ def edit_jail(request):
 	init_jail_name = ''
 	init_jail_desc = ''
 	init_jail_data = ''
-	init_jail_actionvars = ''
+#	init_jail_actionvars = ''
 	init_jail_filter = ''
 	init_jail_action = ''
 	init_logpath = ''
@@ -475,7 +476,7 @@ def edit_jail(request):
 		init_jail_name = i.jail_name
 		init_jail_desc = i.jail_desc
 		init_jail_data = i.jail_data
-		init_jail_actionvars = i.jail_actionvars
+#		init_jail_actionvars = i.jail_actionvars
 		init_jail_filter = i.jail_filter
 		init_jail_action = i.jail_action
 		init_logpath = i.logpath
@@ -489,7 +490,7 @@ def edit_jail(request):
 		'jail_name':init_jail_name,\
 		'jail_desc':init_jail_desc,\
 		'jail_data':init_jail_data,\
-		'jail_actionvars':init_jail_actionvars,\
+#		'jail_actionvars':init_jail_actionvars,\
 		'jail_filter':init_jail_filter,\
 		'jail_action':init_jail_action,\
 		'logpath':init_logpath,\
@@ -511,7 +512,7 @@ def edit_jail(request):
 				jail_name = form.cleaned_data.get("jail_name"),\
 				jail_desc = form.cleaned_data.get("jail_desc"),\
 				jail_data = form.cleaned_data.get("jail_data"),\
-				jail_actionvars = form.cleaned_data.get("jail_actionvars"),\
+#				jail_actionvars = form.cleaned_data.get("jail_actionvars"),\
 				jail_filter = form.cleaned_data.get("jail_filter"),\
 				jail_action = form.cleaned_data.get("jail_action"),\
 				logpath = form.cleaned_data.get("logpath"),\
@@ -546,7 +547,7 @@ def view_jail(request):
 		data += 'backend = '+i.backend +'<br>'
 		data += 'usedns = '+i.usedns+'<br>'
 		data += 'filter = '+str(i.jail_filter)+'<br>'
-		data += 'action = '+str(i.jail_action) +'['+i.jail_actionvars+']<br>'
+#		data += 'action = '+str(i.jail_action) +'['+i.jail_actionvars+']<br>'
 		data += 'logpath = '+i.logpath +'<br>'
 		data += i.jail_data
 	context = {

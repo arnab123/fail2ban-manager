@@ -120,7 +120,7 @@ class Jail(models.Model):
 	jail_name = models.CharField(max_length=20, unique=True)
 	jail_desc = models.CharField(max_length=500, blank=True)
 	jail_data = models.CharField(max_length=1000, blank=True)
-	jail_actionvars = models.CharField(max_length=200, blank=True)
+#	jail_actionvars = models.CharField(max_length=200, blank=True)
 	jail_filter = models.ForeignKey(CustomFilter, blank=True)
 	jail_action = models.ForeignKey(CustomAction, blank=True)
 	logpath = models.CharField(max_length=300)
