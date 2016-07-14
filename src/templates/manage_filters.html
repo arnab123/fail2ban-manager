@@ -3,65 +3,19 @@
 <html>
   <head>
     <title>Manage Filters</title>
+    
      <link type="text/css" rel="stylesheet" href="{% static 'css/style1.css' %}" />  
-        <style>
-            table {
-                        border-collapse: collapse;
-                        width: 100%;
-
-                    }
-
-                  th, td {
-                      text-align: left;
-                      padding: 8px;
-                      max-width: 100px;
-                  }
-
-                  tr:nth-child(even){background-color: #f2f2f2}
-
-                  th {
-                      background-color: #4CAF50;
-                      color: white;
-}
-tr:nth-child(even){background-color: #f2f2f2}
-
-h1.hea {
-  border: 1px;
-  padding-top: 20px;
-  text-align: center;
-}
-
-
-
-.button { 
-    background-color: black;
-    color: white;
-    border: 2px solid #4CAF50;
-    padding: 16px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    -webkit-transition-duration: 0.4s; /* Safari */
-    transition-duration: 0.4s;
-    cursor: pointer;
-}
-
-.button:hover {
-    background-color: #4CAF50;
-    color: white;
-}
-  </style>
+        
   </head>
   <body>
 
     <ul>
-  <li><a class="active" href="/">Home</a></li>
+  <li><a href="/">Home</a></li>
   <li><a href="/addaction">ADD ACTION</a></li>
   <li><a href="/addfilter">ADD FILTER</a></li>  
   <li><a href="/manageactions">MANAGE ACTIONS</a></li>
-  <li><a href="/managefilters">MANAGE FILTERS</a></li>
+  <li><a class="active" href="/managefilters">MANAGE FILTERS</a></li>
+  <li style="float:right"><a href="/logout">LOG OUT</a></li>
   </ul>
 
     <script type="text/javascript" src="{% static 'jquery-3.0.0.min.js' %}"></script>
