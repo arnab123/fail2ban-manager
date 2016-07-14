@@ -9,9 +9,9 @@
 
     
     
-        <link rel="stylesheet" href="{% static "css/style1.css" %} ">
+    
         <link rel="stylesheet" href="{% static "css/style.css" %} ">
-        
+        <link rel="stylesheet" href="{% static "css/style1.css" %} ">
 
     
     
@@ -20,13 +20,13 @@
 
   <body>
 
-  <ul>
+<!--   <ul>
   <li><a class="active" href="/">Home</a></li>
   <li><a href="/addaction">ADD ACTION</a></li>
   <li><a href="/addfilter">ADD FILTER</a></li>  
   <li><a href="/manageactions">MANAGE ACTIONS</a></li>
   <li><a href="/managefilters">MANAGE FILTERS</a></li>
-  </ul>
+  </ul> -->
 
     <h1>Login Form </h1>
 
@@ -34,9 +34,14 @@
   <!-- <div class="outer-screen"> -->
     <div class="inner-screen">
       <div class="form">
-        <input type="text" class="zocial-dribbble" placeholder="Username" />
-        <input type="text" placeholder="Password" />
+      <form method="post">
+<!--         <input type="text" class="zocial-dribbble" placeholder="Username" />
+        <input type="text" placeholder="Password" /> -->
+        {% csrf_token %}
+        {{form.username }}
+        {{form.password }}
          <input type="submit" value="Login" />
+      </form>
         <a href="">Lost your password?</a>
       </div> 
     </div> 

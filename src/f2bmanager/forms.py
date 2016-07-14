@@ -236,3 +236,10 @@ class HostEditForm(forms.Form):
 class MultiAddForm(forms.Form):
 	host = forms.ModelMultipleChoiceField(label='to the following hosts', queryset=Host.objects.all())
 	jail = forms.ModelMultipleChoiceField(label='Add these jails', queryset=Jail.objects.all())
+
+class LoginForm(forms.Form):
+	username = forms.CharField(max_length=40,\
+		widget=forms.TextInput(attrs={'class':"zocial-dribbble", 'type':"text", 'placeholder':"Username"}))
+	password = forms.CharField(max_length=64,\
+		widget=forms.PasswordInput(attrs={ 'type':"password", 'placeholder':"Password"}))
+	

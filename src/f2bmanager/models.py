@@ -150,10 +150,6 @@ class Membership(models.Model):
 	class Meta:
 		unique_together = ('host', 'jail',)
 
-class User(models.Model):
-	name = models.CharField(max_length=64, primary_key=True)
-	passwd = models.CharField(max_length=128)
-	created = models.DateTimeField(auto_now=False, auto_now_add=True)
-	updated = models.DateTimeField(auto_now=True, auto_now_add=False)
+
 
 

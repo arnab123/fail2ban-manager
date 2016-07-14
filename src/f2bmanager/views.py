@@ -1,6 +1,6 @@
 from django.shortcuts import render
-
 from django.http import HttpResponseRedirect
+
 from .forms import FilterForm
 from .forms import ActionForm
 from .forms import FilterEditForm
@@ -18,6 +18,8 @@ from .forms import JailEditForm
 from .forms import HostForm
 from .forms import HostEditForm
 from .forms import MultiAddForm
+
+from .forms import LoginForm
 
 from django.db import IntegrityError
 
@@ -37,8 +39,8 @@ import datetime
 
 from django.utils.safestring import mark_safe
 
-# Create your views here.
-
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login, logout
 
 import os
 
@@ -94,7 +96,7 @@ def makeJailData(i):
 	data += 'backend = '+i.backend +'\n'
 	data += 'usedns = '+i.usedns+'\n'
 	data += 'filter = '+str(i.jail_filter)+'\n'
-	data += 'action = '+str(i.jail_action) +'['+i.jail_actionvars+']\n'
+	data += 'action = '+str(i.jail_action)+'\n'
 	data += 'logpath = '+i.logpath +'\n'
 	data += i.jail_data + '\n\n'
 	return data
@@ -171,11 +173,43 @@ def home(request):
 	# c = Jail.objects.get(jail_name='jail1')
 	# # addActionRemote(1, c)
 	# addJailRemote(1, c)
-	remote_fail_restart(1)
-	return render(request,"home.html", {})
+	#remote_fail_restart(1)
+	#User.objects.create_user('f2badmin', 'fail2ban@fail2ban.fail2ban', 'password')
+	form = LoginForm(request.POST or None)
+	context ={
+		'form' : form,
+		'loginerror' : '0',
+	}
+	if request.method == "POST":
+		if form.is_valid():
+			# uname = form.cleaned_data.get('username')
+			# passwd = form.cleaned_data.get('password')
+			logout(request)
+			uname = request.POST['username']
+			passwd = request.POST['password']
+			user = authenticate(username=uname, password=passwd)
+			if user is not None:
+				if user.is_active:
+					print("User is valid, active and authenticated")
+					login(request, user)
+					return HttpResponseRedirect('/managejails/')
+				else:
+					print("The password is valid, but the account has been disabled!")
+			else:
+				print("The username and password were incorrect.")
+				context['loginerror'] = '1'
+				return render(request,"home.html", context)
+		else:
+			context['loginerror'] = '1'
+			return render(request,"home.html", context)
+	if request.user.is_authenticated():
+		pass
+	return render(request,"home.html", context)
 
 def add_filter(request):
-
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/')
+	print request.user
 	default_filter_data = '[INCLUDES]\n\n# Read common prefixes. \
 If any customizations available -- read them from\n# common.local\nbefore =\
 common.conf\n\n\n[Definition]\n\nfailregex = \n\nignoreregex = '
@@ -202,6 +236,8 @@ common.conf\n\n\n[Definition]\n\nfailregex = \n\nignoreregex = '
 	return render(request,"add_filter.html", context)
 
 def add_action(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/')
 	default_action_data = '[INCLUDES]\n\nbefore = \n\n[Definition]\n\n# Option:  actions\
 tart\n# Notes.:  command executed once at the start of Fail2Ban.\n# Values:  CMD\nactionst\
 art = \n\n\n# Option:  actionstop\n# Notes.:  command executed once at the end of Fai\
@@ -237,6 +273,8 @@ filter_edit_name = ''
 action_edit_name = ''
 
 def edit_filter(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/')
 	init_name = ''
 	init_data = ''
 	init_desc = ''
@@ -274,6 +312,8 @@ def edit_filter(request):
 	return render(request,"edit_filter.html", context)
 
 def edit_action(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/')
 	init_name = ''
 	init_data = ''
 	init_desc = ''
@@ -312,18 +352,24 @@ def edit_action(request):
 
 
 def manage_filters(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/')
 	context =  {
 		'tlist': Filter.objects.order_by('filter_name'),
 	}
 	return render(request, 'manage_filters.html', context)
 
 def manage_actions(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/')
 	context =  {
 		'tlist': Action.objects.order_by('action_name'),
 	}
 	return render(request, 'manage_actions.html', context)
 
 def view_filter(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/')
 	name = request.GET.get('name')
 	qset = Filter.objects.filter(filter_name=name)
 	if qset.count() < 1:
@@ -340,6 +386,8 @@ def view_filter(request):
 	return render(request, 'view.html', context)
 
 def view_action(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/')
 	name = request.GET.get('name')
 	qset = Action.objects.filter(action_name=name)
 	if qset.count() < 1:
@@ -356,6 +404,8 @@ def view_action(request):
 	return render(request, 'view.html', context)
 
 def delete_filter(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/')
 	name = request.GET.get('name')
 	qset = Filter.objects.filter(filter_name=name)
 	if qset.count() < 1:
@@ -367,6 +417,8 @@ def delete_filter(request):
 	return render(request, 'empty.html', {})
 
 def delete_action(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/')
 	name = request.GET.get('name')
 	qset = Action.objects.filter(action_name=name)
 	if qset.count() < 1:
@@ -378,6 +430,8 @@ def delete_action(request):
 	return render(request, 'empty.html', {})
 
 def edit_defaultjail(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/')
 	qset = DefaultJail.objects.all()
 	init_ignoreip = ''
 	init_bantime = ''
@@ -412,6 +466,8 @@ def edit_defaultjail(request):
 	return render(request,"edit_defaultjail.html", context)
 
 def add_jail(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/')
 	qset = DefaultJail.objects.all()
 	init_ignoreip = ''
 	init_bantime = ''
@@ -445,6 +501,8 @@ def add_jail(request):
 	return render(request,"add_jail.html", context)
 
 def edit_jail(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/')
 	name = request.GET.get('name')
 	qset = Jail.objects.filter(jail_name=name)
 	if qset.count() < 1:
@@ -524,12 +582,16 @@ def edit_jail(request):
 	return render(request,"edit_jail.html", context)
 
 def manage_jails(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/')
 	context =  {
 		'tlist': Jail.objects.order_by('jail_name'),
 	}
 	return render(request, 'manage_jails.html', context)
 
 def view_jail(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/')
 	name = request.GET.get('name')
 	qset = Jail.objects.filter(jail_name=name)
 	if qset.count() < 1:
@@ -557,6 +619,8 @@ def view_jail(request):
 	return render(request, 'view.html', context)
 
 def delete_jail(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/')
 	name = request.GET.get('name')
 	qset = Jail.objects.filter(jail_name=name)
 	if qset.count() < 1:
@@ -567,6 +631,8 @@ def delete_jail(request):
 	return render(request, 'empty.html', {})
 
 def add_customfilter(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/')
 	default_failregex = ''
 	form = CustomFilterForm(request.POST or None, initial={'failregex': default_failregex})
 	context =  {
@@ -583,6 +649,8 @@ def add_customfilter(request):
 	return render(request,"add_customfilter.html", context)
 
 def edit_customfilter(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/')
 	init_name = ''
 	init_data = ''
 	init_desc = ''
@@ -627,12 +695,16 @@ def edit_customfilter(request):
 	return render(request,"edit_customfilter.html", context)
 
 def manage_customfilters(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/')
 	context =  {
 		'tlist': CustomFilter.objects.order_by('filter_name'),
 	}
 	return render(request, 'manage_filters.html', context)
 
 def view_customfilter(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/')
 	name = request.GET.get('name')
 	qset = CustomFilter.objects.filter(filter_name=name)
 	if qset.count() < 1:
@@ -652,6 +724,8 @@ def view_customfilter(request):
 	return render(request, 'view.html', context)
 
 def delete_customfilter(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/')
 	name = request.GET.get('name')
 	qset = CustomFilter.objects.filter(filter_name=name)
 	if qset.count() < 1:
@@ -662,6 +736,8 @@ def delete_customfilter(request):
 	return render(request, 'empty.html', {})
 
 def add_customaction(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/')
 	form = CustomActionForm(request.POST or None, initial={'block_type': 'iptables'})
 	context =  {
 		'form': form,
@@ -677,6 +753,8 @@ def add_customaction(request):
 	return render(request,"add_customaction.html", context)
 
 def edit_customaction(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/')
 	init_name = ''
 	init_data = ''
 	init_desc = ''
@@ -748,12 +826,16 @@ def edit_customaction(request):
 	return render(request,"edit_customaction.html", context)
 
 def manage_customactions(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/')
 	context =  {
 		'tlist': CustomAction.objects.order_by('action_name'),
 	}
 	return render(request, 'manage_actions.html', context)
 
 def view_customaction(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/')
 	name = request.GET.get('name')
 	qset = CustomAction.objects.filter(action_name=name)
 	if qset.count() < 1:
@@ -789,6 +871,8 @@ def view_customaction(request):
 	return render(request, 'view.html', context)
 
 def delete_customaction(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/')
 	name = request.GET.get('name')
 	qset = CustomAction.objects.filter(action_name=name)
 	if qset.count() < 1:
@@ -800,6 +884,8 @@ def delete_customaction(request):
 
 
 def add_host(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/')
 	form = HostForm(request.POST or None)
 	context =  {
 		'form': form,
@@ -828,6 +914,8 @@ def add_host(request):
 	return render(request,"add_host.html", context)
 
 def edit_host(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/')
 	req = request.GET
 	name = req.get('name')
 	print name
@@ -874,6 +962,8 @@ def edit_host(request):
 	return render(request,"edit_host.html", context)
 
 def view_log(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/')
 	name = request.GET.get('name')
 	qset = Host.objects.filter(host_name=name)
 	if qset.count() < 1:
@@ -890,6 +980,8 @@ def view_log(request):
 	return render(request, 'view.html', context)
 
 def delete_host(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/')
 	name = request.GET.get('name')
 	qset = Host.objects.filter(host_name=name)
 	if qset.count() < 1:
@@ -906,12 +998,16 @@ def delete_host(request):
 	return render(request, 'empty.html', {})
 
 def manage_hosts(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/')
 	context =  {
 		'tlist': Host.objects.order_by('host_name'),
 	}
 	return render(request, 'manage_hosts.html', context)
 
 def get_log(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/')
 	name = request.GET.get('name')
 	qset = Host.objects.filter(host_name=name)
 	if qset.count() < 1:
@@ -928,6 +1024,8 @@ def get_log(request):
 	return render(request, 'empty.html', {})
 
 def multi_add(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/')
 	form = MultiAddForm(request.POST or None)
 	context =  {
 		'form': form,
@@ -951,3 +1049,7 @@ def multi_add(request):
 			if Host.objects.filter(host_name=form.data['host_name']).count() > 0:
 				context['name_error']='1'
 	return render(request,"add_host.html", context)
+
+def logout_view(request):
+    logout(request)
+    return HttpResponseRedirect('/')
