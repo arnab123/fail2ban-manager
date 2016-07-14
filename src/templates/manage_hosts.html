@@ -3,10 +3,22 @@
 <html>
   <head>
     <title>Manage Hosts</title>
-    <!-- <link type="text/css" rel="stylesheet" href="{% static 'css/' %}" />  -->
+    
+    <link type="text/css" rel="stylesheet" href="{% static 'css/style1.css' %}" /> 
     
   </head>
   <body>
+
+<ul>
+  <li><a href="/">Home</a></li>
+  <li><a href="/addcustomaction">ADD ACTION</a></li>
+  <li><a href="/addcustomfilter">ADD FILTER</a></li>  
+  <li><a href="/managecustomactions">MANAGE ACTIONS</a></li>
+  <li><a class="active" href="/managecustomfilters">MANAGE FILTERS</a></li>
+  <li style="float:right"><a href="/logout">LOG OUT</a></li>
+  </ul>
+
+  
     <script type="text/javascript" src="{% static 'jquery-3.0.0.min.js' %}"></script>
     <div id="heading">
       <h1 class="hea">HOSTS</h1>

@@ -1,12 +1,67 @@
+{% load staticfiles %}
 <!DOCTYPE html>
 <html>
 <head>
 	<title></title>
+	<link type="text/css" rel="stylesheet" href="{% static 'css/style1.css' %}" /> 
+	<link type="text/css" rel="stylesheet" href="{% static 'css/style2.css' %}" /> 
+
+	
+
 </head>
 <body>
+
+<ul>
+  <li><a href="/">Home</a></li>
+  <li><a href="/addcustomaction">ADD ACTION</a></li>
+  <li><a href="/addcustomfilter">ADD FILTER</a></li>  
+  <li><a href="/managecustomactions">MANAGE ACTIONS</a></li>
+  <li><a class="active" href="/managecustomfilters">MANAGE FILTERS</a></li>
+  <li style="float:right"><a href="/logout">LOG OUT</a></li>
+  </ul>
+
+
+
 <form method="post" action="" onSubmit="">
 {% csrf_token %}
-{{form}}
+{{ form.ignoreip.label_tag }}
+{{ form.ignoreip }}
+ 
+{{ form.bantime.label_tag }}
+{{ form.bantime }}
+ 
+{{ form.findtime.label_tag }}
+{{ form.findtime }}
+ 
+{{ form.maxretry.label_tag }}
+{{ form.maxretry }}
+ 
+{{ form.backend.label_tag }}
+{{ form.backend }}
+ 
+{{ form.usedns.label_tag }}
+{{ form.usedns }}
+ 
+{{ form.jail_name.label_tag }}
+{{ form.jail_name }}
+ 
+{{ form.jail_desc.label_tag }}
+{{ form.jail_desc }}
+ 
+{{ form.jail_data.label_tag }}
+{{ form.jail_data }}
+ 
+{{ form.jail_filter.label_tag }}
+{{ form.jail_filter }}
+ 
+{{ form.jail_action.label_tag }}
+{{ form.jail_action }}
+ 
+{{ form.logpath.label_tag }}
+{{ form.logpath }}
+ 
+{{ form.enabled }}
+{{ form.enabled }}
 <div>
 	<input type="submit" value="Add Jail" />
 </div>
