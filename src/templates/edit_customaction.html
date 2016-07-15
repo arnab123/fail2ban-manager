@@ -1,0 +1,18 @@
+{% extends "add_customaction.html" %}
+
+{% block submit %}
+<div class="formElement">
+	<input type="submit" class="submit" value="Save" />
+</div>
+{% endblock %}
+
+{% block cancel %}
+<div class="formElement">
+	<input type="button" onclick="window.location.replace(&quot;http://127.0.0.1:8000&quot;)" class="submit" id="cancel" value="Cancel" />
+</div>
+{% endblock %}
+
+{% block script %}
+	<script type="text/javascript">
+	</script>
+{% endblock %}

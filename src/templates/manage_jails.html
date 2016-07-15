@@ -1,0 +1,79 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Manage Jails</title>
+
+    <link type="text/css" rel="stylesheet" href="{% static 'css/style1.css' %}" /> 
+    
+  </head>
+  <body>
+
+<ul>
+  <li><a href="/">Home</a></li>
+<!--   <li><a href="/addcustomaction">ADD ACTION</a></li>
+  <li><a href="/addcustomfilter">ADD FILTER</a></li>   -->
+  <li><a href="/managecustomactions">MANAGE ACTIONS</a></li>
+  <li><a href="/managecustomfilters">MANAGE FILTERS</a></li>
+  <li><a class="active" href="/managejails">MANAGE JAILS</a></li>
+  <li><a href="/managehosts">MANAGE HOSTS</a></li>
+  <li style="float:right"><a href="/logout">LOG OUT</a></li>
+  </ul>
+
+
+  
+    <script type="text/javascript" src="{% static 'jquery-3.0.0.min.js' %}"></script>
+    <div id="heading">
+      <h1 class="hea">JAILS</h1>
+    </div>
+    <div id="changediv">
+      <button class="button" type="button" onclick="window.location.href = &quot;/editdefaultjail/&quot;">Edit Default Settings</button>
+    </div>
+    <div id="adddiv">
+      <button class="button" type="button" onclick="window.location.href = &quot;/addjail/&quot;">Add Jail</button>
+    </div>
+    <div id="tablediv" >
+    <table id="maintable" style="width:100%">
+      <tr class="row">
+        <th class="nametd">Name</th>
+        <th >Filter</th>
+        <th >Action</th>
+        <th >Logpath</th>
+        <th class="desctd">Description</th> 
+        <th class="viewtd">  </th>
+        <th class="edittd">  </th>
+        <th class="deletetd"> </th> 
+      </tr>
+      {% for entry in tlist %}
+      <tr class="row">
+        <td class="nametd">{{ entry.jail_name }}</td>
+        <td>{{ entry.jail_filter }}</td> 
+        <td>{{ entry.jail_action }}</td> 
+        <td>{{ entry.logpath }}</td> 
+        <td class="desctd">{{ entry.jail_desc }}</td> 
+        <td class="viewtd"> <button class="viewbutton" type="button">View</button> </td>
+        <td class="edittd"> <button class="editbutton" type="button">Edit</button> </td>
+        <td class="deletetd"> <button class="deletebutton" type="button">Delete</button> </td>
+      </tr>
+      {% endfor %}
+    </table>
+    </div>
+  <script type="text/javascript" src="{%static 'js/jailmanager.js' %}"> </script> 
+  {% block script %}
+  {% endblock %}
+  </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
