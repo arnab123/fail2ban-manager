@@ -54,5 +54,7 @@ urlpatterns = [
 	url(r'^getlog/', views.get_log, name='getlog'),
 	url(r'^multiadd/', views.multi_add, name='multiadd'),
 	url(r'^logout/', views.logout_view, name='logout'),
+	url(r'^deploylocal/', views.deploylocal, name='deploylocal'),
+	url(r'^viewloglocal/', views.viewloglocal, name='viewloglocal'),
 	url(r'^$', views.home, name='home'),
 ]

@@ -85,8 +85,8 @@ class JailForm(forms.ModelForm):
 	backend = forms.ChoiceField(label='Backend Type', choices=Jail.BACKEND_CHOICE)
 	usedns = forms.ChoiceField(label='Use DNS', choices=Jail.USEDNS_CHOICE)
 	jail_name = forms.CharField(label='Name', max_length=20)
-	jail_desc = forms.CharField(label='Description', max_length=500, widget=forms.Textarea())
-	jail_data = forms.CharField(label='', max_length=1000, widget=forms.Textarea())
+	jail_desc = forms.CharField(label='Description', max_length=500, widget=forms.Textarea(), required=False)
+	jail_data = forms.CharField(label='', max_length=1000, widget=forms.Textarea(), required=False)
 #	jail_actionvars = forms.CharField(label='Jail Action Variables', max_length=200, widget=forms.Textarea())
 	jail_filter = forms.ModelChoiceField(label='Filter', queryset=CustomFilter.objects.all())
 	jail_action = forms.ModelChoiceField(label='Action', queryset=CustomAction.objects.all())
@@ -104,8 +104,8 @@ class JailEditForm(forms.Form):
 	backend = forms.ChoiceField(label='Backend Type', choices=Jail.BACKEND_CHOICE)
 	usedns = forms.ChoiceField(label='Use DNS', choices=Jail.USEDNS_CHOICE)
 	jail_name = forms.CharField(label='Name', max_length=20)
-	jail_desc = forms.CharField(label='Description', max_length=500, widget=forms.Textarea())
-	jail_data = forms.CharField(label='', max_length=1000, widget=forms.Textarea())
+	jail_desc = forms.CharField(label='Description', max_length=500, required=False, widget=forms.Textarea())
+	jail_data = forms.CharField(label='', max_length=1000, widget=forms.Textarea(), required=False)
 #	jail_actionvars = forms.CharField(label='Jail Action Variables', max_length=200, widget=forms.Textarea())
 	jail_filter = forms.ModelChoiceField(label='Filter', queryset=CustomFilter.objects.all())
 	jail_action = forms.ModelChoiceField(label='Action', queryset=CustomAction.objects.all())
@@ -116,8 +116,8 @@ class CustomFilterForm(forms.ModelForm):
 	filter_name = forms.CharField(label='Name', max_length=30, widget=forms.TextInput(attrs={'class': "inputtext", 'type': "text"}))
 	filter_desc = forms.CharField(label='Description', max_length=500, widget=forms.Textarea())
 	failregex = forms.CharField(label='Fail Regex', max_length=2000, widget=forms.Textarea())
-	ignoreregex = forms.CharField(label='Ignore Regex', max_length=2000, widget=forms.Textarea())
-	filter_data = forms.CharField(label='Data', max_length=2000, widget=forms.Textarea())
+	ignoreregex = forms.CharField(label='Ignore Regex', max_length=2000, widget=forms.Textarea(), required=False)
+	filter_data = forms.CharField(label='Data', max_length=2000, widget=forms.Textarea(), required=False)
 	
 	class Meta:
 		model = CustomFilter
@@ -136,15 +136,15 @@ class CustomFilterForm(forms.ModelForm):
 
 class CustomActionForm(forms.ModelForm):
 	action_name = forms.CharField(label='Name', max_length=30, widget=forms.TextInput(attrs={'class': "inputtext", 'type': "text"}))
-	action_desc = forms.CharField(label='Description', max_length=500, widget=forms.Textarea())
+	action_desc = forms.CharField(label='Description', max_length=500, widget=forms.Textarea(), required=False)
 	block_type = forms.ChoiceField(label='Block Using', choices=CustomAction.BLOCKTYPE_CHOICE)
-	ip_chain = forms.CharField(label='New Chain Name', max_length=100)
+	ip_chain = forms.CharField(label='New Chain Name', max_length=100, required=False)
 	ip_block_type = forms.ChoiceField(label='Block Type', choices=CustomAction.IPBLOCKTYPE_CHOICE)
-	ip_port = forms.CharField(label='Port (# or name)', max_length=30)
+	ip_port = forms.CharField(label='Port (# or name)', max_length=30, required=False)
 	ip_protocol = forms.ChoiceField(label='Protocol', choices=CustomAction.IPPROTOCOL_CHOICE)
-	tcp_file = forms.CharField(label='', max_length=300)
+	tcp_file = forms.CharField(label='', max_length=300, required=False)
 	tcp_block_type = forms.ChoiceField(label='Block Type', choices=CustomAction.TCPBLOCKTYPE_CHOICE)
-	action_data = forms.CharField(label='Data', max_length=2000, widget=forms.Textarea())
+	action_data = forms.CharField(label='Data', max_length=2000, widget=forms.Textarea(), required=False)
 	
 	class Meta:
 		model = CustomAction
@@ -174,8 +174,8 @@ class CustomFilterEditForm(forms.Form):
 	filter_name = forms.CharField(label='Name', max_length=30, widget=forms.TextInput(attrs={'class': "inputtext", 'type': "text"}))
 	filter_desc = forms.CharField(label='Description', max_length=500, widget=forms.Textarea())
 	failregex = forms.CharField(label='Fail Regex', max_length=2000, widget=forms.Textarea())
-	ignoreregex = forms.CharField(label='Ignore Regex', max_length=2000, widget=forms.Textarea())
-	filter_data = forms.CharField(label='Data', max_length=2000, widget=forms.Textarea())
+	ignoreregex = forms.CharField(label='Ignore Regex', max_length=2000, widget=forms.Textarea(), required=False)
+	filter_data = forms.CharField(label='Data', max_length=2000, widget=forms.Textarea(), required=False)
 	
 	def clean_filter_name(self):
 		return self.cleaned_data.get('filter_name')
@@ -191,15 +191,15 @@ class CustomFilterEditForm(forms.Form):
 
 class CustomActionEditForm(forms.Form):
 	action_name = forms.CharField(label='Name', max_length=30, widget=forms.TextInput(attrs={'class': "inputtext", 'type': "text"}))
-	action_desc = forms.CharField(label='Description', max_length=500, widget=forms.Textarea())
+	action_desc = forms.CharField(label='Description', max_length=500, widget=forms.Textarea(), required=False)
 	block_type = forms.ChoiceField(label='Block Using', choices=CustomAction.BLOCKTYPE_CHOICE)
-	ip_chain = forms.CharField(label='New Chain Name', max_length=100)
+	ip_chain = forms.CharField(label='New Chain Name', max_length=100, required=False)
 	ip_block_type = forms.ChoiceField(label='Block Type', choices=CustomAction.IPBLOCKTYPE_CHOICE)
-	ip_port = forms.CharField(label='Port (# or name)', max_length=30)
+	ip_port = forms.CharField(label='Port (# or name)', max_length=30, required=False)
 	ip_protocol = forms.ChoiceField(label='Protocol', choices=CustomAction.IPPROTOCOL_CHOICE)
-	tcp_file = forms.CharField(label='', max_length=300)
+	tcp_file = forms.CharField(label='', max_length=300, required=False)
 	tcp_block_type = forms.ChoiceField(label='Block Type', choices=CustomAction.TCPBLOCKTYPE_CHOICE)
-	action_data = forms.CharField(label='Data', max_length=2000, widget=forms.Textarea())
+	action_data = forms.CharField(label='Data', max_length=2000, widget=forms.Textarea(), required=False)
 	
 	def clean_action_name(self):
 		return self.cleaned_data.get('action_name')

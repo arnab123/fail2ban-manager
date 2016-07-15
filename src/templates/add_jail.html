@@ -16,9 +16,7 @@
   <li><a href="/addcustomaction">ADD ACTION</a></li>
   <li><a href="/addcustomfilter">ADD FILTER</a></li>  
   <li><a href="/managecustomactions">MANAGE ACTIONS</a></li>
-  <li><a href="/managecustomfilters">MANAGE FILTERS</a></li>
-  <li><a class="active" href="/addjail">ADD JAIL</a></li>
-  <li><a href="/managejails">MANAGE JAIL</a></li>
+  <li><a class="active" href="/managecustomfilters">MANAGE FILTERS</a></li>
   <li style="float:right"><a href="/logout">LOG OUT</a></li>
   </ul>
 
@@ -26,15 +24,12 @@
 
 <form method="post" action="" onSubmit="">
 {% csrf_token %}
-<div>
 {{ form.ignoreip.label_tag }}
 {{ form.ignoreip }}
- </div>
- <div>
+ 
 {{ form.bantime.label_tag }}
 {{ form.bantime }}
- </div>
- <div>
+ 
 {{ form.findtime.label_tag }}
 {{ form.findtime }}
  
@@ -46,33 +41,27 @@
  
 {{ form.usedns.label_tag }}
 {{ form.usedns }}
-</div>
- <div>
+ 
 {{ form.jail_name.label_tag }}
 {{ form.jail_name }}
- </div>
- <div>
-
+ 
 {{ form.jail_desc.label_tag }}
 {{ form.jail_desc }}
  
 {{ form.jail_data.label_tag }}
 {{ form.jail_data }}
-</div>
- <div>
+ 
 {{ form.jail_filter.label_tag }}
 {{ form.jail_filter }}
  
 {{ form.jail_action.label_tag }}
 {{ form.jail_action }}
- </div>
- <div>
+ 
 {{ form.logpath.label_tag }}
 {{ form.logpath }}
  
 {{ form.enabled.label_tag }}
 {{ form.enabled }}
-</div>
 <div>
 	<input type="submit" value="Add Jail" />
 </div>

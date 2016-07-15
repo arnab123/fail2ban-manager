@@ -72,6 +72,7 @@ class CustomAction(models.Model):
 	def __unicode__(self):
 		return self.action_name
 
+
 class DefaultJail(models.Model):
 	BACKEND_CHOICE = (
 		('auto', 'Auto'),

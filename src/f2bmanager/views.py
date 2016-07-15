@@ -102,15 +102,56 @@ def makeJailData(i):
 	return data
 
 def onDeploy():
-	print 'Deploy Called'
-	qset = Jail.objects.all()
-	temp = ''
-	for i in qset:
-		temp += makeJailData(Jail.objects.get(jail_name=i.jail_name))
-		onFilterEdit(str(i.jail_filter))
-		onActionEdit(str(i.jail_action))
-	os.system('echo \"' + temp + '\" > /etc/fail2ban/jail.local')
-	fail_restart()
+	for i in Jail.objects.all():
+		addJailLocal(i)
+	# os.system('')
+	# os.system('')
+	# os.system('')
+	# os.system('')
+
+def addFilterLocal(filt):
+	filt_data = Res.filter_sshd.replace("<<failregex>>", filt.failregex)
+	filt_data = filt_data.replace("<<ignoreregex>>", filt.ignoreregex)
+	filt_name = filt.filter_name
+	file_name = filt_name+'.conf'
+	print filt_data
+	f = open('/tmp/fail2ban/filter.d/'+file_name, 'w')
+	f.write(filt_data)
+	f.close()
+	#os.system('sshpass -p "" scp -r ~/django/proj/src/f2bmanager/'+file_name+' @:/etc/fail2ban/filter.d/')
+	#add
+
+def addActionLocal(act):
+	act_data = ''
+	act_name = act.action_name
+	if act.block_type == "iptables":
+		act_data = Res.action_iptables.replace("<<name>>",act.ip_chain)
+		act_data = act_data.replace("<<port>>",act.ip_port)
+		act_data = act_data.replace("<<protocol>>",act.ip_port)
+		act_data = act_data.replace("<<blocktype>>",act.ip_block_type)
+	elif act.block_type == "tcp-wrapper":
+		act_data = Res.action_hostsdeny.replace("<<file>>",act.tcp_file)
+		act_data = act_data.replace("<<blocktype>>",act.tcp_block_type)
+	file_name = act_name+'.conf'
+	print act_data
+	f = open('/tmp/fail2ban/action.d/'+file_name, 'w')
+	f.write(act_data)
+	f.close()
+	#os.system('sshpass -p "" scp -r ~/django/proj/src/f2bmanager/'+file_name+' @:/etc/fail2ban/action.d/')
+	
+
+def addJailLocal(jail):
+	addFilterLocal(jail.jail_filter)
+	addActionLocal(jail.jail_action)
+	jail_data = makeJailData(jail)
+	print "addedjail "+jail.jail_name
+	file_name = jail.jail_name + '.conf'
+	f = open('/tmp/fail2ban/jail.d/'+file_name, 'w')
+	f.write(jail_data)
+	f.close()
+	# os.system('sshpass -p "" scp -r ~/django/proj/src/f2bmanager/temp @:/etc/fail2ban/')
+	# os.system('sshpass -p "" ssh @ "cat /etc/fail2ban/temp >> /etc/fail2ban/jail.local"')
+
 
 def addFilterRemote(ip, filt):
 	filt_data = Res.filter_sshd.replace("<<failregex>>", filt.failregex)
@@ -118,10 +159,10 @@ def addFilterRemote(ip, filt):
 	filt_name = filt.filter_name
 	file_name = filt_name+'.conf'
 	print filt_data
-	f = open('/home/arnab/django/proj/src/f2bmanager/'+file_name, 'w')
+	f = open('~/django/proj/src/f2bmanager/'+file_name, 'w')
 	f.write(filt_data)
 	f.close()
-	#os.system('sshpass -p "" scp -r /home/arnab/django/proj/src/f2bmanager/'+file_name+' @:/etc/fail2ban/filter.d/')
+	#os.system('sshpass -p "" scp -r ~/django/proj/src/f2bmanager/'+file_name+' @:/etc/fail2ban/filter.d/')
 	#add
 
 def delFilterRemote(ip, filt):
@@ -141,10 +182,10 @@ def addActionRemote(ip, act):
 		act_data = act_data.replace("<<blocktype>>",act.tcp_block_type)
 	file_name = act_name+'.conf'
 	print act_data
-	f = open('/home/arnab/django/proj/src/f2bmanager/'+file_name, 'w')
+	f = open('~/django/proj/src/f2bmanager/'+file_name, 'w')
 	f.write(act_data)
 	f.close()
-	#os.system('sshpass -p "" scp -r /home/arnab/django/proj/src/f2bmanager/'+file_name+' @:/etc/fail2ban/action.d/')
+	#os.system('sshpass -p "" scp -r ~/django/proj/src/f2bmanager/'+file_name+' @:/etc/fail2ban/action.d/')
 	
 
 def delActionRemote(ip, act):
@@ -156,10 +197,10 @@ def addJailRemote(ip, jail):
 	addActionRemote(ip, jail.jail_action)
 	jail_data = makeJailData(jail)
 	print "addedjail "+jail.jail_name
-	f = open('/home/arnab/django/proj/src/f2bmanager/temp', 'w')
+	f = open('~/django/proj/src/f2bmanager/temp', 'w')
 	f.write(jail_data)
 	f.close()
-	# os.system('sshpass -p "" scp -r /home/arnab/django/proj/src/f2bmanager/temp @:/etc/fail2ban/')
+	# os.system('sshpass -p "" scp -r ~/django/proj/src/f2bmanager/temp @:/etc/fail2ban/')
 	# os.system('sshpass -p "" ssh @ "cat /etc/fail2ban/temp >> /etc/fail2ban/jail.local"')
 
 def delJailRemote(ip, jail):
@@ -718,7 +759,7 @@ def view_customfilter(request):
 		ignore = i.ignoreregex
 	context = {
 		'name' : name,
-		'data' : mark_safe('Fail Regex : '+ fail + '<br><br>' + 'Ignore Regex : ' + ignore \
+		'data' : mark_safe('Fail Regex : '+ fail.replace('^%','<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;^%') + '<br><br>' + 'Ignore Regex : ' + ignore.replace('^%','<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;^%') \
 		 + '<br><br>' + data),
 	}
 	return render(request, 'view.html', context)
@@ -738,7 +779,7 @@ def delete_customfilter(request):
 def add_customaction(request):
 	if not request.user.is_authenticated():
 		return HttpResponseRedirect('/')
-	form = CustomActionForm(request.POST or None, initial={'block_type': 'iptables'})
+	form = CustomActionForm(request.POST or None, initial={'block_type': 'iptables', 'tcp_file': '/etc/hosts.deny'})
 	context =  {
 		'form': form,
 		'name_error': '0',
@@ -967,9 +1008,9 @@ def view_log(request):
 	name = request.GET.get('name')
 	qset = Host.objects.filter(host_name=name)
 	if qset.count() < 1:
-		raise Exception('host entry with the given name doesn\'t exist')
+		raise Exception('host entry with the given name or ip doesn\'t exist')
 	elif qset.count() > 1:
-		raise Exception('More than one hosts with the given name exists')
+		raise Exception('More than one hosts with the given name or ip exists')
 	data = ''
 	for i in qset:
 		log = i.log
@@ -985,9 +1026,9 @@ def delete_host(request):
 	name = request.GET.get('name')
 	qset = Host.objects.filter(host_name=name)
 	if qset.count() < 1:
-		raise Exception('Filter entry with the given name doesn\'t exist')
+		raise Exception('Host entry with the given name doesn\'t exist')
 	elif qset.count() > 1:
-		raise Exception('More than one filters with the given name exists')
+		raise Exception('More than one hosts with the given name or ip exists')
 	host = Host.objects.get(host_name=name)
 	delset = Membership.objects.filter(host=Host.objects.get(host_name=name))
 	for i in delset:
@@ -1011,9 +1052,9 @@ def get_log(request):
 	name = request.GET.get('name')
 	qset = Host.objects.filter(host_name=name)
 	if qset.count() < 1:
-		raise Exception('host entry with the given name doesn\'t exist')
+		raise Exception('host entry with the given name or ip doesn\'t exist')
 	elif qset.count() > 1:
-		raise Exception('More than one hosts with the given name exists')
+		raise Exception('More than one hosts with the given name or ip exists')
 	data = ''
 	for i in qset:
 		host_name = i.host_name
@@ -1053,3 +1094,25 @@ def multi_add(request):
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect('/')
+
+def deploylocal(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/')
+	onDeploy()
+	return HttpResponseRedirect('/managehosts/')
+
+def viewloglocal(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect('/')
+	os.system('./f2bmanager/suids/getlog')
+	log = ''
+	f = open('/tmp/fail2ban/fail2ban.log', 'r')
+	lines = f.readlines()
+	f.close()
+	for line in lines:
+		log += line + '<br>'
+	context = {
+		'name' : 'Log',
+		'data' : mark_safe(log),
+	}
+	return render(request, 'view.html', context)

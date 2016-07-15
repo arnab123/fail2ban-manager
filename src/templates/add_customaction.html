@@ -16,10 +16,9 @@
   <li><a href="/addcustomfilter">ADD FILTER</a></li>  
   <li><a href="/managecustomactions">MANAGE ACTIONS</a></li>
   <li><a href="/managecustomfilters">MANAGE FILTERS</a></li>
-  <li><a href="/addjail">ADD JAIL</a></li>
-  <li><a href="/managejails">MANAGE JAIL</a></li>
   <li style="float:right"><a href="/logout">LOG OUT</a></li>
   </ul>
+  <script type="text/javascript" src="{% static 'jquery-3.0.0.min.js' %}"></script>
 
 		<div id="wrapper">
 			<h1 class="hea"> New Action
@@ -54,7 +53,7 @@
 					<div class="fix"></div>
 				</div>
 
-				<div class="formElement" id="ip1">
+				<div class="formElement bt ip" id="ip1">
 					<!-- <label for="action_desc">Description</label>
 					<textarea id="id_action_desc" name="action_desc"></textarea> -->
 					{% csrf_token %}
@@ -63,7 +62,7 @@
 					<div class="fix"></div>
 				</div>
 
-				<div class="formElement" id="ip2">
+				<div class="formElement bt ip" id="ip2">
 					<!-- <label for="action_desc">Description</label>
 					<textarea id="id_action_desc" name="action_desc"></textarea> -->
 					{% csrf_token %}
@@ -72,7 +71,7 @@
 					<div class="fix"></div>
 				</div>
 
-				<div class="formElement" id="ip3">
+				<div class="formElement bt ip" id="ip3">
 					<!-- <label for="action_desc">Description</label>
 					<textarea id="id_action_desc" name="action_desc"></textarea> -->
 					{% csrf_token %}
@@ -81,7 +80,7 @@
 					<div class="fix"></div>
 				</div>
 
-				<div class="formElement" id="ip4">
+				<div class="formElement bt ip" id="ip4">
 					<!-- <label for="action_desc">Description</label>
 					<textarea id="id_action_desc" name="action_desc"></textarea> -->
 					{% csrf_token %}
@@ -90,21 +89,22 @@
 					<div class="fix"></div>
 				</div>
 
-				<div class="formElement" id="tcp1">
-					<!-- <label for="action_desc">Description</label>
-					<textarea id="id_action_desc" name="action_desc"></textarea> -->
-					{% csrf_token %}
-    				{{ form.tcp_file.label_tag }}
-    				{{ form.tcp_file }}
-					<div class="fix"></div>
-				</div>
 
-				<div class="formElement" id="tcp2">
+				<div class="formElement bt tcp" id="tcp1">
 					<!-- <label for="action_desc">Description</label>
 					<textarea id="id_action_desc" name="action_desc"></textarea> -->
 					{% csrf_token %}
     				{{ form.tcp_block_type.label_tag }}
     				{{ form.tcp_block_type }}
+					<div class="fix"></div>
+				</div>
+
+				<div class="formElement bt tcp" id="tcp2">
+					<!-- <label for="action_desc">Description</label>
+					<textarea id="id_action_desc" name="action_desc"></textarea> -->
+					{% csrf_token %}
+    				{{ form.tcp_file.label_tag }}
+    				{{ form.tcp_file }}
 					<div class="fix"></div>
 				</div>
 
@@ -130,6 +130,7 @@
 	
 	<script type="text/javascript"> var err = {{ name_error }} </script>
 	<script type="text/javascript" src="{% static 'js/name_error.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/actionblocktype.js' %}"></script>
 	{% block script %}
 	{% endblock %}
 	</body>
