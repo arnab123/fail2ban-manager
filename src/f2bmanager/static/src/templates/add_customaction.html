@@ -1,0 +1,137 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Add new action</title>
+		<link type="text/css" rel="stylesheet" href="{% static 'css/action_form.css' %}" />
+		<link rel="stylesheet" href="{% static "css/style.css" %} "> 
+		<link rel="stylesheet" href="{% static 'css/style1.css' %} ">
+	</head>
+	<body>
+
+		
+		<ul>
+  <li><a href="/">Home</a></li>
+  <li><a class="active" href="/addcustomaction">ADD ACTION</a></li>
+  <li><a href="/addcustomfilter">ADD FILTER</a></li>  
+  <li><a href="/managecustomactions">MANAGE ACTIONS</a></li>
+  <li><a href="/managecustomfilters">MANAGE FILTERS</a></li>
+  <li style="float:right"><a href="/logout">LOG OUT</a></li>
+  </ul>
+  <script type="text/javascript" src="{% static 'jquery-3.0.0.min.js' %}"></script>
+
+		<div id="wrapper">
+			<h1 class="hea"> New Action
+			</h1>
+			<form method="post" action="" id="actionform" name="actionform" onSubmit="">
+
+				<div class="formElement">
+					<!-- <label for="id_action_name">Name</label>
+					<input id="id_action_name" name="action_name" class="inputtext" maxlength="50" value="" type="text"/> -->
+					{% csrf_token %}
+    				{{ form.action_name.label_tag }}
+    				{{ form.action_name }}
+    				<div id='error1'><i><pre>     (Action already exists!)</pre></i></div>
+					<div class="fix"></div>
+				</div>
+
+				<div class="formElement">
+					<!-- <label for="action_desc">Description</label>
+					<textarea id="id_action_desc" name="action_desc"></textarea> -->
+					{% csrf_token %}
+    				{{ form.action_desc.label_tag }}
+    				{{ form.action_desc }}
+					<div class="fix"></div>
+				</div>
+
+				<div class="formElement" id="tcpip">
+					<!-- <label for="action_desc">Description</label>
+					<textarea id="id_action_desc" name="action_desc"></textarea> -->
+					{% csrf_token %}
+    				{{ form.block_type.label_tag }}
+    				{{ form.block_type }}
+					<div class="fix"></div>
+				</div>
+
+				<div class="formElement bt ip" id="ip1">
+					<!-- <label for="action_desc">Description</label>
+					<textarea id="id_action_desc" name="action_desc"></textarea> -->
+					{% csrf_token %}
+    				{{ form.ip_chain.label_tag }}
+    				{{ form.ip_chain }}
+					<div class="fix"></div>
+				</div>
+
+				<div class="formElement bt ip" id="ip2">
+					<!-- <label for="action_desc">Description</label>
+					<textarea id="id_action_desc" name="action_desc"></textarea> -->
+					{% csrf_token %}
+    				{{ form.ip_block_type.label_tag }}
+    				{{ form.ip_block_type }}
+					<div class="fix"></div>
+				</div>
+
+				<div class="formElement bt ip" id="ip3">
+					<!-- <label for="action_desc">Description</label>
+					<textarea id="id_action_desc" name="action_desc"></textarea> -->
+					{% csrf_token %}
+    				{{ form.ip_port.label_tag }}
+    				{{ form.ip_port }}
+					<div class="fix"></div>
+				</div>
+
+				<div class="formElement bt ip" id="ip4">
+					<!-- <label for="action_desc">Description</label>
+					<textarea id="id_action_desc" name="action_desc"></textarea> -->
+					{% csrf_token %}
+    				{{ form.ip_protocol.label_tag }}
+    				{{ form.ip_protocol }}
+					<div class="fix"></div>
+				</div>
+
+
+				<div class="formElement bt tcp" id="tcp1">
+					<!-- <label for="action_desc">Description</label>
+					<textarea id="id_action_desc" name="action_desc"></textarea> -->
+					{% csrf_token %}
+    				{{ form.tcp_block_type.label_tag }}
+    				{{ form.tcp_block_type }}
+					<div class="fix"></div>
+				</div>
+
+				<div class="formElement bt tcp" id="tcp2">
+					<!-- <label for="action_desc">Description</label>
+					<textarea id="id_action_desc" name="action_desc"></textarea> -->
+					{% csrf_token %}
+    				{{ form.tcp_file.label_tag }}
+    				{{ form.tcp_file }}
+					<div class="fix"></div>
+				</div>
+
+				<div class="formElement">
+					<!-- <label for="action_data">Data</label>
+					<textarea id="id_action_data" name="action_data"></textarea> -->
+					{% csrf_token %}
+    				{{ form.action_data.label_tag }}
+    				{{ form.action_data }}
+					<div class="fix"></div>
+				</div>
+				{% block submit %}
+				<div class="formElement">
+					<input type="submit" class="submit" value="Add Action" />
+					<div class="fix"></div>
+				</div>
+				{% endblock %}
+				{% block cancel %}
+				{% endblock %}
+				
+			</form>
+		</div>
+	
+	<script type="text/javascript"> var err = {{ name_error }} </script>
+	<script type="text/javascript" src="{% static 'js/name_error.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/actionblocktype.js' %}"></script>
+	{% block script %}
+	{% endblock %}
+	</body>
+</html>

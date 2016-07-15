@@ -1,0 +1,84 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Manage Hosts</title>
+    
+    <link type="text/css" rel="stylesheet" href="{% static 'css/style1.css' %}" /> 
+    
+  </head>
+  <body>
+
+<ul>
+  <li><a href="/">Home</a></li>
+  <li><a href="/addcustomaction">ADD ACTION</a></li>
+  <li><a href="/addcustomfilter">ADD FILTER</a></li>  
+  <li><a href="/managecustomactions">MANAGE ACTIONS</a></li>
+  <li><a class="active" href="/managecustomfilters">MANAGE FILTERS</a></li>
+  <li style="float:right"><a href="/logout">LOG OUT</a></li>
+  </ul>
+
+  
+    <script type="text/javascript" src="{% static 'jquery-3.0.0.min.js' %}"></script>
+    <div id="heading">
+      <h1 class="hea">HOSTS</h1>
+    </div>
+    <div id="deploylocal">
+      <button class="button" type="button" onclick="window.location.href = &quot;/deploylocal/&quot;">Deploy Locally</button>
+    </div>
+    <div id="viewloglocal">
+      <button class="button" type="button" onclick="window.location.href = &quot;/viewloglocal/&quot;">View Log</button>
+    </div>
+     <div id="mutiadddiv">
+      <button class="button" type="button" onclick="window.location.href = &quot;/multiadd/&quot;">Add Jails to multiple Hosts</button>
+    </div>
+    <div id="adddiv">
+      <button class="button" type="button" onclick="window.location.href = &quot;/addhost/&quot;">Add Host</button>
+    </div>
+    <div id="tablediv" >
+    <table id="maintable" style="width:100%">
+      <tr class="row">
+        <th class="nametd">Name</th>
+        <th >IP</th>
+        <th >Log updated on</th>
+        <th class="desctd">Log History (in days)</th> 
+        <th>Jails</th> 
+        <th class="viewtd">  </th>
+        <th class="gettd">  </th>
+        <th class="edittd">  </th>
+        <th class="deletetd"> </th> 
+      </tr>
+      {% for entry in tlist %}
+      <tr class="row">
+        <td class="nametd">{{ entry.host_name }}</td>
+        <td>{{ entry.ip }}</td> 
+        <td>{{ entry.updated }}</td> 
+        <td>{{ entry.days }}</td> 
+        <td>{% for jail_entry in entry.jail.all %} {{jail_entry}}, {% endfor %}</td>
+        <td class="viewtd"> <button class="viewbutton" type="button">View Log</button> </td>
+        <td class="gettd"> <button class="getbutton" type="button">Get Log</button> </td>
+        <td class="edittd"> <button class="editbutton" type="button">Edit</button> </td>
+        <td class="deletetd"> <button class="deletebutton" type="button">Delete</button> </td>
+      </tr>
+      {% endfor %}
+    </table>
+    </div>
+  <script type="text/javascript" src="{%static 'js/hostmanager.js' %}"> </script> 
+  {% block script %}
+  {% endblock %}
+  </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
