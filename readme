@@ -1,2 +1,21 @@
+mysql -u root -p
+(enter root password)
 
-updates : templates/add_filter.html (22/6 730pm)
+mysql>
+CREATE DATABASE f2bdb CHARACTER SET UTF8;
+(create user with uname: f2badmin password : password
+ to use any other uname or password make required changes in settings.py)
+GRANT ALL PRIVILEGES ON f2bdb.* TO f2badmin@localhost;
+
+delete all files in src/f2bmanager/migrations
+comment out ready fn in apps.py
+
+python manage.py makemigrations
+python manage.py makemigrations f2bmanager
+python manage.py migrate
+
+uncomment out ready fn in apps.py
+
+python manage.py makemigrations
+python manage.py migrate
+python manage.py runserver
