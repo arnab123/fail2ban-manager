@@ -18,7 +18,7 @@ stop\n# Notes.:  command executed once at the end of Fail2Ban\n# Values:  CMD\n#
 top = iptables -D <chain> -p <protocol> --dport <port> -j fail2ban-<name>\n             ipt\
 ables -F fail2ban-<name>\n             iptables -X fail2ban-<name>\n\n# Option:  actionche\
 ck\n# Notes.:  command executed once before each actionban command\n# Values:  CMD\n#\nact\
-ioncheck = iptables -n -L <chain> | grep -q \'fail2ban-<name>[ \t]\'\n\n# Option:  action\
+ioncheck = iptables -n -L <chain> | grep -q \'fail2ban-<name>[ \\t]\'\n\n# Option:  action\
 ban\n# Notes.:  command executed when banning an IP. Take care that the\n#          comman\
 d is executed with Fail2Ban user rights.\n# Tags:    See jail.conf(5) man page\n# Value\
 s:  CMD\n#\nactionban = iptables -I fail2ban-<name> 1 -s <ip> -j <blocktype>\n\n# Opti\

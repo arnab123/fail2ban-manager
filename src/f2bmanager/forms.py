@@ -1,7 +1,5 @@
 from django import forms
 
-from .models import Filter
-from .models import Action
 from .models import DefaultJail
 from .models import Jail
 from .models import CustomFilter
@@ -9,70 +7,13 @@ from .models import CustomAction
 from .models import Host
 from .models import Membership
 
-class FilterForm(forms.ModelForm):
-	filter_name = forms.CharField(label='Name', max_length=30, widget=forms.TextInput(attrs={'class': "inputtext", 'type': "text"}))
-	filter_desc = forms.CharField(label='Description', max_length=500, widget=forms.Textarea())
-	filter_data = forms.CharField(label='Data', max_length=5000, widget=forms.Textarea())
-	
-	class Meta:
-		model = Filter
-		exclude = []
-	def clean_filter_name(self):
-		return self.cleaned_data.get('filter_name')
-	def clean_filter_desc(self):
-		return self.cleaned_data.get('filter_desc')
-	def clean_filter_data(self):
-		return self.cleaned_data.get('filter_data')
-
-
-class ActionForm(forms.ModelForm):
-	action_name = forms.CharField(label='Name', max_length=30, widget=forms.TextInput(attrs={'class': "inputtext", 'type': "text"}))
-	action_desc = forms.CharField(label='Description', max_length=500, widget=forms.Textarea())
-	action_data = forms.CharField(label='Data', max_length=5000, widget=forms.Textarea())
-	
-	class Meta:
-		model = Action
-		exclude = []
-	def clean_action_name(self):
-		return self.cleaned_data.get('action_name')
-	def clean_action_desc(self):
-		return self.cleaned_data.get('action_desc')
-	def clean_action_data(self):
-		return self.cleaned_data.get('action_data')
-
-
-class FilterEditForm(forms.Form):
-	filter_name = forms.CharField(label='Name', max_length=30, widget=forms.TextInput(attrs={'class': "inputtext", 'type': "text"}))
-	filter_desc = forms.CharField(label='Description', max_length=500, widget=forms.Textarea())
-	filter_data = forms.CharField(label='Data', max_length=5000, widget=forms.Textarea())
-	
-	def clean_filter_name(self):
-		return self.cleaned_data.get('filter_name')
-	def clean_filter_desc(self):
-		return self.cleaned_data.get('filter_desc')
-	def clean_filter_data(self):
-		return self.cleaned_data.get('filter_data')
-
-class ActionEditForm(forms.Form):
-	action_name = forms.CharField(label='Name', max_length=30, widget=forms.TextInput(attrs={'class': "inputtext", 'type': "text"}))
-	action_desc = forms.CharField(label='Description', max_length=500, widget=forms.Textarea())
-	action_data = forms.CharField(label='Data', max_length=5000, widget=forms.Textarea())
-	
-	def clean_action_name(self):
-		return self.cleaned_data.get('action_name')
-	def clean_action_desc(self):
-		return self.cleaned_data.get('action_desc')
-	def clean_action_data(self):
-		return self.cleaned_data.get('action_data')
-
-
 class DefaultJailEditForm(forms.ModelForm):
 	ignoreip = forms.CharField(label='Ignore IP', max_length=500)
 	bantime = forms.IntegerField(label='Bantime')
 	findtime = forms.IntegerField(label='Findtime')
 	maxretry = forms.IntegerField(label='Max Retries')
-	backend = forms.ChoiceField(label='Backend Type', choices=DefaultJail.BACKEND_CHOICE)
-	usedns = forms.ChoiceField(label='Use DNS', choices=DefaultJail.USEDNS_CHOICE)
+	# backend = forms.ChoiceField(label='Backend Type', choices=DefaultJail.BACKEND_CHOICE)
+	# usedns = forms.ChoiceField(label='Use DNS', choices=DefaultJail.USEDNS_CHOICE)
 	class Meta:
 		model = DefaultJail
 		exclude = []
@@ -82,8 +23,8 @@ class JailForm(forms.ModelForm):
 	bantime = forms.IntegerField(label='Bantime')
 	findtime = forms.IntegerField(label='Findtime')
 	maxretry = forms.IntegerField(label='Max Retries')
-	backend = forms.ChoiceField(label='Backend Type', choices=Jail.BACKEND_CHOICE)
-	usedns = forms.ChoiceField(label='Use DNS', choices=Jail.USEDNS_CHOICE)
+	# backend = forms.ChoiceField(label='Backend Type', choices=Jail.BACKEND_CHOICE)
+	# usedns = forms.ChoiceField(label='Use DNS', choices=Jail.USEDNS_CHOICE)
 	jail_name = forms.CharField(label='Name', max_length=20)
 	jail_desc = forms.CharField(label='Description', max_length=500, widget=forms.Textarea(), required=False)
 	jail_data = forms.CharField(label='', max_length=1000, widget=forms.Textarea(), required=False)
@@ -101,8 +42,8 @@ class JailEditForm(forms.Form):
 	bantime = forms.IntegerField(label='Bantime')
 	findtime = forms.IntegerField(label='Findtime')
 	maxretry = forms.IntegerField(label='Max Retries')
-	backend = forms.ChoiceField(label='Backend Type', choices=Jail.BACKEND_CHOICE)
-	usedns = forms.ChoiceField(label='Use DNS', choices=Jail.USEDNS_CHOICE)
+	# backend = forms.ChoiceField(label='Backend Type', choices=Jail.BACKEND_CHOICE)
+	# usedns = forms.ChoiceField(label='Use DNS', choices=Jail.USEDNS_CHOICE)
 	jail_name = forms.CharField(label='Name', max_length=20)
 	jail_desc = forms.CharField(label='Description', max_length=500, required=False, widget=forms.Textarea())
 	jail_data = forms.CharField(label='', max_length=1000, widget=forms.Textarea(), required=False)
@@ -127,9 +68,11 @@ class CustomFilterForm(forms.ModelForm):
 	def clean_filter_desc(self):
 		return self.cleaned_data.get('filter_desc')
 	def clean_failregex(self):
-		return self.cleaned_data.get('failregex')
+		a = self.cleaned_data.get('failregex')
+		return a
 	def clean_ignoreregex(self):
-		return self.cleaned_data.get('ignoreregex')
+		a = self.cleaned_data.get('ignoreregex')
+		return a
 	def clean_filter_data(self):
 		return self.cleaned_data.get('filter_data')
 

@@ -4,26 +4,6 @@ from django.db import models
 
 # Create your models here.
 
-class Filter(models.Model):
-	filter_name = models.CharField(max_length=20, unique=True)
-	filter_desc = models.CharField(max_length=500, blank=True)
-	filter_data = models.CharField(max_length=5000)
-	created = models.DateTimeField(auto_now=False, auto_now_add=True)
-	updated = models.DateTimeField(auto_now=True, auto_now_add=False)
-
-	def __unicode__(self):
-		return self.filter_name
-
-class Action(models.Model):
-	action_name = models.CharField(max_length=20, unique=True)
-	action_desc = models.CharField(max_length=500, blank=True)
-	action_data = models.CharField(max_length=5000)
-	created = models.DateTimeField(auto_now=False, auto_now_add=True)
-	updated = models.DateTimeField(auto_now=True, auto_now_add=False)
-
-	def __unicode__(self):
-		return self.action_name
-
 
 class CustomFilter(models.Model):
 	filter_name = models.CharField(max_length=20, unique=True)
@@ -47,10 +27,10 @@ class CustomAction(models.Model):
 	block_type = models.CharField(max_length=40, choices=BLOCKTYPE_CHOICE, default='iptables')
 	ip_chain = models.CharField(max_length=20, null=True, blank=True)
 	IPBLOCKTYPE_CHOICE = (
-		('drop', 'Drop'),
-		('reject', 'Reject with ICMP Message'),
+		('DROP', 'Drop'),
+		('REJECT --reject-with icmp-port-unreachable', 'Reject with ICMP Message'),
 	)
-	ip_block_type = models.CharField(max_length=40, choices=IPBLOCKTYPE_CHOICE, default='drop', null=True, blank=True)
+	ip_block_type = models.CharField(max_length=100, choices=IPBLOCKTYPE_CHOICE, default='drop', null=True, blank=True)
 	ip_port = models.CharField(max_length=30, default='ssh', null=True, blank=True)
 	IPPROTOCOL_CHOICE = (
 		('tcp', 'TCP'),
@@ -89,8 +69,8 @@ class DefaultJail(models.Model):
 	bantime = models.IntegerField(default=600)
 	findtime = models.IntegerField(default=600)
 	maxretry = models.IntegerField(default=3)
-	backend = models.CharField(max_length=15, choices=BACKEND_CHOICE, default='auto')
-	usedns = models.CharField(max_length=5, choices=USEDNS_CHOICE, default='warn')
+	# backend = models.CharField(max_length=15, choices=BACKEND_CHOICE, default='auto')
+	# usedns = models.CharField(max_length=5, choices=USEDNS_CHOICE, default='warn')
 
 	def __unicode__(self):
 		return self.name
@@ -111,8 +91,8 @@ class Jail(models.Model):
 	bantime = models.IntegerField(default=600)
 	findtime = models.IntegerField(default=600)
 	maxretry = models.IntegerField(default=3)
-	backend = models.CharField(max_length=15, choices=BACKEND_CHOICE, default='auto')
-	usedns = models.CharField(max_length=5, choices=USEDNS_CHOICE, default='warn')
+	# backend = models.CharField(max_length=15, choices=BACKEND_CHOICE, default='auto')
+	# usedns = models.CharField(max_length=5, choices=USEDNS_CHOICE, default='warn')
 	
 	ENABLED_CHOICE = (
 		('true', 'True'),
