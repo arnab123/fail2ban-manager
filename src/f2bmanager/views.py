@@ -81,6 +81,8 @@ def makeJailData(i):
 	return data
 
 def onDeploy():
+	os.system('rm -r /tmp/fail2ban/jail.d')
+	os.system('mkdir /tmp/fail2ban/jail.d')
 	for i in Jail.objects.all():
 		addJailLocal(i)
 	os.system('./f2bmanager/suids/writefilter')
@@ -89,11 +91,13 @@ def onDeploy():
 	os.system('./f2bmanager/suids/failreload')
 
 def addFilterLocal(filt):
+	print filt.failregex
 	filt_data = Res.filter_sshd.replace("<<failregex>>", filt.failregex)
 	filt_data = filt_data.replace("<<ignoreregex>>", filt.ignoreregex)
 	filt_name = filt.filter_name
 	file_name = filt_name+'.conf'
 	print filt_data
+	
 	f = open('/tmp/fail2ban/filter.d/'+file_name, 'w')
 	f.write(filt_data)
 	f.close()

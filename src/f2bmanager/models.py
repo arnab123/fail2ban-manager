@@ -42,7 +42,7 @@ class CustomAction(models.Model):
 	tcp_file = models.CharField(max_length=80, null=True, blank=True)
 	TCPBLOCKTYPE_CHOICE = (
 		('ALL', 'ALL'),
-		('SSH', 'SSH'),
+		('sshd', 'SSH'),
 	)
 	tcp_block_type = models.CharField(max_length=20, choices=TCPBLOCKTYPE_CHOICE, default='ALL', null=True, blank=True)
 	action_data = models.CharField(max_length=2000, null=True, blank=True)

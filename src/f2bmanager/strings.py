@@ -42,7 +42,7 @@ heck\n# Notes.:  command executed once before each actionban command\n# Values: 
 oncheck = \n\n# Option:  actionban\n# Notes.:  command executed when banning an IP. Take c\
 are that the\n#          command is executed with Fail2Ban user rights.\n# Tags:    See ja\
 il.conf(5) man page\n# Values:  CMD\n#\nactionban = IP=<ip> &&\n            printf %%b "<d\
-aemon_list>: $IP\n" >> <file>\n\n# Option:  actionunban\n# Notes.:  command executed wh\
+aemon_list>: $IP\\n\" >> <file>\n\n# Option:  actionunban\n# Notes.:  command executed wh\
 en unbanning an IP. Take care that the\n#          command is executed with Fail2Ban us\
 er rights.\n# Tags:    See jail.conf(5) man page\n# Values:  CMD\n#\nactionunban = ec\
 ho "/^<daemon_list>: <ip>$/<br>d<br>w<br>q" | ed <file>\n\n[Init]\n\n# Option:  fi\
