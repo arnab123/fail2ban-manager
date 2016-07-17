@@ -1,3 +1,5 @@
+**Check branch cleaned for updated project
+
 mysql -u root -p
 (enter root password)
 
@@ -19,3 +21,4 @@ uncomment out ready fn in apps.py
 python manage.py makemigrations
 python manage.py migrate
 python manage.py runserver
+(Runs the development server)
